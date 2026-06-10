@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Contagem Resinas</title>
+    <title>Contagem Resinas - Final</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Spiltag">
-    <link rel="apple-touch-icon" href="icon-192.png">
+    <link class="apple-touch-icon" href="icon-192.png">
     <meta name="theme-color" content="#a51c30">
     <script>
         if ('serviceWorker' in navigator) {
@@ -21,44 +20,38 @@
         :root { --border: #000; --header-bg: #e9e9e9; --accent: #a51c30; --btn-grey: #666666; --btn-blue: #0056b3; }
         body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }
 
-        /* TELA DE LOGIN */
+        /* TELA DE LOGIN - CONFIGURAÇÃO CORRIGIDA (IGUAL À SEGUNDA FOTO) */
         #login-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: #f4f4f4; display: flex; align-items: center; justify-content: center; z-index: 9999;
         }
         .login-box {
-            background: white; padding: 30px; border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 90%; max-width: 350px;
+            background: white; padding: 40px; border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 90%; max-width: 380px;
             text-align: center; border-top: 6px solid var(--accent);
         }
-        .login-box h1 { color: var(--accent); margin: 0 0 5px 0; font-size: 28px; letter-spacing: 2px; font-weight: bold; }
-        .login-box p { font-size: 12px; color: #666; margin-bottom: 20px; font-weight: bold; }
+        /* Título e Subtítulo centralizados e com espaçamento da foto */
+        .login-box h1 { color: var(--accent); margin: 0 0 10px 0; font-size: 32px; letter-spacing: 2px; font-weight: bold; }
+        .login-box p { font-size: 16px; color: #333; margin-bottom: 30px; font-weight: bold; text-transform: uppercase; }
         
-        .password-container { position: relative; width: 100%; }
-        
+        /* Estilização limpa dos campos de input da foto */
         .login-box input {
-            width: 100% !important; padding: 12px !important; margin: 10px 0 !important; 
-            border: 1px solid #aaa !important; border-radius: 6px !important; 
-            box-sizing: border-box !important; font-size: 16px !important;
-            background-color: #ffffff !important; display: block !important;
-            outline: none !important; text-align: center;
+            width: 100%; padding: 14px; margin: 10px 0; 
+            border: 1px solid #ccc; border-radius: 6px; 
+            box-sizing: border-box; font-size: 16px;
+            background-color: #fff; text-align: center;
         }
-        
-        .toggle-password {
-            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-            cursor: pointer; width: 22px; height: 22px; opacity: 0.5;
-            z-index: 10; user-select: none;
-            background-repeat: no-repeat; background-position: center; background-size: contain;
-        }
-        .toggle-password:hover { opacity: 0.8; }
+        /* Corrigindo os placeholders para ficarem centralizados e limpos */
+        .login-box input::placeholder { color: #888; font-weight: normal; opacity: 1; }
 
         .btn-login {
             width: 100%; padding: 14px; background-color: var(--accent);
             color: white; border: none; border-radius: 6px; cursor: pointer;
-            font-weight: bold; font-size: 16px; margin-top: 10px;
+            font-weight: bold; font-size: 16px; margin-top: 20px;
+            text-transform: uppercase;
         }
 
-        /* CONTEÚDO PRINCIPAL */
+        /* CONTEÚDO PRINCIPAL (MANTENDO A TABELA SIMÉTRICA QUE FUNCIONA) */
         #app-content { display: none; padding: 5px; background-color: #fff; }
 
         .no-print { margin-bottom: 10px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; padding: 10px; }
@@ -67,13 +60,19 @@
         .btn-email { padding: 10px 18px; cursor: pointer; border: 1px solid #000; background-color: var(--btn-blue); color: white; font-weight: bold; border-radius: 4px; }
         
         .container { width: 100%; overflow-x: auto; }
-        table { border-collapse: collapse; width: 100%; min-width: 1000px; table-layout: fixed; } 
-        th, td { border: 1px solid var(--border); padding: 4px 2px; text-align: center; word-wrap: break-word; }
+        table { border-collapse: collapse; width: 100%; min-width: 1250px; table-layout: fixed; } 
+        th, td { border: 1px solid var(--border); padding: 5px 2px; text-align: center; word-wrap: break-word; font-size: 12px; }
         .bg-grey { background-color: var(--header-bg); font-weight: bold; }
         .bg-spiltag { background-color: var(--accent); color: white; font-weight: bold; }
         .editable { background-color: #fffdec; border: 1px solid #ccc !important; }
-        input[type="number"], input[type="text"] { width: 95%; border: none; text-align: center; background: transparent; font-size: 13px; font-weight: bold; }
-        .res-val { font-weight: bold; font-size: 14px; }
+        
+        input[type="number"], input[type="text"].table-input { width: 95%; border: none; text-align: center; background: transparent; font-size: 13px; font-weight: bold; }
+        select.select-resina { width: 98%; font-size: 11px; font-weight: bold; padding: 2px; border: 1px solid #bbb; border-radius: 4px; }
+
+        .logo-box { color: var(--accent); font-size: 38px; font-weight: bold; letter-spacing: 2px; }
+        .resp-label { background-color: var(--accent); color: white; font-weight: bold; padding: 8px; font-size: 14px; }
+        .res-val { font-weight: bold; font-size: 13px; }
+        .sub-cod { font-size: 9px !important; font-weight: normal !important; color: #ddd !important; display: block; }
 
         #custom-alert {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -82,28 +81,15 @@
         .alert-content {
             background: white; padding: 25px; border-radius: 10px; text-align: center;
             max-width: 400px; width: 85%; border-top: 8px solid var(--accent);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
         }
-        .alert-content h2 { color: var(--accent); margin-top: 0; }
-        .alert-content p { color: #333; font-weight: bold; margin: 20px 0; line-height: 1.4; }
-        
-        .alert-buttons { display: flex; gap: 10px; justify-content: center; }
-        .btn-alert-ok { background: var(--accent); color: white; border: none; padding: 12px 25px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 15px; }
-        .btn-alert-cancel { background: var(--btn-grey); color: white; border: none; padding: 12px 25px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 15px; }
-
-        .logo-text { font-weight: bold; font-size: 30px !important; color: var(--accent) !important; }
-        .sub-cod { font-size: 10px !important; font-weight: normal !important; color: #ddd !important; display: block; }
+        .btn-alert-ok { background: var(--accent); color: white; border: none; padding: 12px 25px; border-radius: 5px; font-weight: bold; cursor: pointer; }
 
         @media print {
-            @page { size: portrait; margin: 0.5cm; }
             .no-print, #login-screen, #custom-alert { display: none !important; }
-            body { margin: 0; padding: 0; zoom: 75%; } 
-            .container { overflow: visible !important; }
-            table { min-width: 100% !important; width: 100% !important; table-layout: fixed !important; font-size: 10px !important; }
-            th, td { padding: 2px 1px !important; border: 1px solid #000 !important; }
-            .bg-spiltag { background-color: var(--accent) !important; -webkit-print-color-adjust: exact; color: white !important; }
+            body { zoom: 70%; } 
+            table { width: 100% !important; table-layout: fixed !important; }
+            .bg-spiltag { background-color: var(--accent) !important; color: white !important; -webkit-print-color-adjust: exact; }
             .bg-grey { background-color: var(--header-bg) !important; -webkit-print-color-adjust: exact; }
-            .sub-cod { color: white !important; -webkit-print-color-adjust: exact; font-size: 9px !important; }
         }
     </style>
 </head>
@@ -113,105 +99,107 @@
         <div class="alert-content">
             <h2 id="alert-title">Atenção!</h2>
             <p id="alert-msg"></p>
-            <div class="alert-buttons" id="alert-btns"></div>
+            <div id="alert-btns"></div>
         </div>
     </div>
 
     <div id="login-screen">
         <div class="login-box">
             <h1>SPILTAG</h1>
-            <p>INVENTÁRIO DE RESINAS</p>
-            <input type="text" id="user_in" placeholder="Usuário" autocomplete="off">
-            <div class="password-container">
-                <input type="password" id="pass_in" placeholder="Senha">
-                <span class="toggle-password" onclick="toggleSenha()" id="eye-icon"></span>
-            </div>
+            <p>INVENTÁRIO DE RESINAS</p> <input type="text" id="user_in" placeholder="Usuário">
+            <input type="password" id="pass_in" placeholder="Senha">
             <button class="btn-login" onclick="validarAcesso()">ENTRAR NO SISTEMA</button>
         </div>
     </div>
 
     <div id="app-content">
         <div class="no-print">
-            <button class="btn-pdf" onclick="window.print()">IMPRIMIR PDF</button>
-            <button class="btn-email" onclick="enviarEmail()">ENVIAR E-MAIL</button>
+            <button class="btn-pdf" onclick="window.print()">IMPRIMIR PDF / SALVAR</button>
+            <button class="btn-email" onclick="enviarEmail()">ENVIAR RELATÓRIO</button>
             <button class="btn-clear" onclick="confirmarLimpeza()">LIMPAR TUDO</button>
         </div>
 
         <div class="container">
             <table>
                 <colgroup>
-                    <col style="width: 15%;"> <col style="width: 11%;"> <col style="width: 5%;"> 
-                    <col style="width: 8%;"> <col style="width: 4.4%;"><col style="width: 4.4%;"><col style="width: 4.4%;"><col style="width: 4.4%;"> 
-                    <col style="width: 4.4%;"><col style="width: 4.4%;"><col style="width: 4.4%;"><col style="width: 4.4%;"> 
-                    <col style="width: 5.3%;"><col style="width: 5.3%;"><col style="width: 5.3%;"> 
-                </colgroup>
+                    <col style="width: 14%;"> <col style="width: 10%;"> <col style="width: 5%;">  <col style="width: 7%;">  <col style="width: 16%;"> <col style="width: 3.5%;"><col style="width: 3.5%;"><col style="width: 3.5%;"><col style="width: 3.5%;"> <col style="width: 6.8%;"><col style="width: 6.8%;"><col style="width: 6.8%;"><col style="width: 6.8%;"><col style="width: 6.8%;"><col style="width: 6.8%;"> </colgroup>
+                
                 <tr>
-                    <td rowspan="4" class="logo-text">SPILTAG</td>
-                    <td colspan="2" id="current-time">--/--/---- --:--:--</td>
-                    <td class="bg-spiltag">SALDO</td>
-                    <td class="bg-spiltag" colspan="4">PET VIRGEM <span class="sub-cod">(0010006)</span></td>
-                    <td class="bg-spiltag" colspan="4">PCR 0T <span class="sub-cod">(0010048)</span></td>
-                    <td class="bg-spiltag" colspan="3">PCR 10T <span class="sub-cod">(0010030)</span></td>
+                    <td rowspan="4" class="logo-box">SPILTAG</td>
+                    <td colspan="4" id="current-time" style="font-weight: bold; border-bottom: none;">--/--/---- --:--:--</td>
+                    <td class="bg-spiltag" colspan="4">SALDO</td>
+                    <td class="bg-spiltag">PET VIRGEM<span class="sub-cod">(0010006)</span></td>
+                    <td class="bg-spiltag">PCR 0T<span class="sub-cod">(0010048)</span></td>
+                    <td class="bg-spiltag">PCR 10T<span class="sub-cod">(0010030)</span></td>
+                    <td class="bg-spiltag">ACQUAMIX<span class="sub-cod">(0010023)</span></td>
+                    <td class="bg-spiltag">PCR GLOBAL<span class="sub-cod">(0010066)</span></td>
+                    <td class="bg-spiltag">VALGROUP<span class="sub-cod">(0010080)</span></td>
                 </tr>
+                
                 <tr>
-                    <td class="bg-spiltag" colspan="2">RESPONSÁVEL</td>
-                    <td class="bg-spiltag">SISTEMA</td>
-                    <td colspan="4"><input type="number" id="sys_v" class="editable res-val" oninput="calc()" onkeydown="handleEnter(event, 'sys_0t')" placeholder=""></td>
-                    <td colspan="4"><input type="number" id="sys_0t" class="editable res-val" oninput="calc()" onkeydown="handleEnter(event, 'sys_10t')" placeholder=""></td>
-                    <td colspan="3"><input type="number" id="sys_10t" class="editable res-val" oninput="calc()" onkeydown="handleEnter(event, 'peso-0')" placeholder=""></td>
+                    <td colspan="4" class="resp-label">RESPONSÁVEL</td>
+                    <td class="bg-spiltag" colspan="4">SISTEMA</td>
+                    <td><input type="number" id="sys_v" class="editable res-val" oninput="calc()"></td>
+                    <td><input type="number" id="sys_0t" class="editable res-val" oninput="calc()"></td>
+                    <td><input type="number" id="sys_10t" class="editable res-val" oninput="calc()"></td>
+                    <td><input type="number" id="sys_acq" class="editable res-val" oninput="calc()"></td>
+                    <td><input type="number" id="sys_glo" class="editable res-val" oninput="calc()"></td>
+                    <td><input type="number" id="sys_val" class="editable res-val" oninput="calc()"></td>
                 </tr>
+                
                 <tr>
-                    <td rowspan="2" colspan="2"><input type="text" id="resp" class="editable" placeholder="Seu Nome"></td>
-                    <td class="bg-spiltag">SOMA</td>
-                    <td colspan="4" id="som_v" class="res-val">0.00</td>
-                    <td colspan="4" id="som_0t" class="res-val">0.00</td>
-                    <td colspan="3" id="som_10t" class="res-val">0.00</td>
+                    <td colspan="4" rowspan="2" style="padding: 10px;">
+                        <input type="text" id="resp" class="editable table-input" placeholder="Nome Completo" style="font-size: 16px; width: 90%;">
+                    </td>
+                    <td class="bg-spiltag" colspan="4">SOMA</td>
+                    <td id="som_v" class="res-val">0.0</td>
+                    <td id="som_0t" class="res-val">0.0</td>
+                    <td id="som_10t" class="res-val">0.0</td>
+                    <td id="som_acq" class="res-val">0.0</td>
+                    <td id="som_glo" class="res-val">0.0</td>
+                    <td id="som_val" class="res-val">0.0</td>
                 </tr>
+                
                 <tr>
-                    <td class="bg-spiltag">DIF.</td>
-                    <td colspan="4" id="dif_v" class="res-val">0.00</td>
-                    <td colspan="4" id="dif_0t" class="res-val">0.00</td>
-                    <td colspan="3" id="dif_10t" class="res-val">0.00</td>
+                    <td class="bg-spiltag" colspan="4">DIFERENÇA</td>
+                    <td id="dif_v" class="res-val">0.0</td>
+                    <td id="dif_0t" class="res-val">0.0</td>
+                    <td id="dif_10t" class="res-val">0.0</td>
+                    <td id="dif_acq" class="res-val">0.0</td>
+                    <td id="dif_glo" class="res-val">0.0</td>
+                    <td id="dif_val" class="res-val">0.0</td>
                 </tr>
+
                 <tr class="bg-grey">
-                    <th rowspan="2">Ponto</th><th rowspan="2">Local</th><th rowspan="2">Cap.</th><th rowspan="2">Peso</th>
-                    <th colspan="4">MIX PCR 0T</th><th colspan="4">MIX PCR 10T</th>
-                    <th rowspan="2">PET</th><th rowspan="2">0T</th><th rowspan="2">10T</th>
+                    <th rowspan="2">Ponto de Contagem</th>
+                    <th rowspan="2">Localização</th>
+                    <th rowspan="2">Cap.</th>
+                    <th rowspan="2">Peso (KG)</th>
+                    <th rowspan="2">Configuração da Carga / Resina Base</th>
+                    <th colspan="4">Proporção do Mix Selecionado</th>
+                    <th colspan="6">Distribuição Líquida Calculada (KG)</th>
                 </tr>
-                <tr class="bg-grey" style="font-size: 12px;">
+                <tr class="bg-grey" style="font-size: 11px;">
                     <th>25%</th><th>50%</th><th>75%</th><th>100%</th>
-                    <th>25%</th><th>50%</th><th>75%</th><th>100%</th>
+                    <th>PET Vi</th><th>0T</th><th>10T</th><th>ACQUAMIX</th><th>GLOBAL</th><th>VALGROUP</th>
                 </tr>
+                
                 <tbody id="table-body"></tbody>
+                
                 <tr class="bg-grey">
-                    <td colspan="12" style="text-align:right; font-weight:bold;">SOMA TOTAL:</td>
-                    <td id="tot_v" class="res-val">0.00</td><td id="tot_0t" class="res-val">0.00</td><td id="tot_10t" class="res-val">0.00</td>
+                    <td colspan="9" style="text-align:right; font-weight:bold;">SOMA TOTAL FÍSICA:</td>
+                    <td id="tot_v" class="res-val">0.0</td>
+                    <td id="tot_0t" class="res-val">0.0</td>
+                    <td id="tot_10t" class="res-val">0.0</td>
+                    <td id="tot_acq" class="res-val">0.0</td>
+                    <td id="tot_glo" class="res-val">0.0</td>
+                    <td id="tot_val" class="res-val">0.0</td>
                 </tr>
             </table>
         </div>
     </div>
 
     <script>
-        const iconeAberto = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23666' viewBox='0 0 24 24'%3%3Cpath d='M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z'/%3E%3C/svg%3E";
-        const iconeFechado = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23666' viewBox='0 0 24 24'%3%3Cpath d='M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.44-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.01-.16c0-1.66-1.34-3-3-3l-.16.01z'/%3E%3C/svg%3E";
-
-        function toggleSenha() {
-            const input = document.getElementById('pass_in');
-            const eye = document.getElementById('eye-icon');
-            if (input.type === 'password') {
-                input.type = 'text';
-                eye.style.backgroundImage = `url("${iconeAberto}")`;
-            } else {
-                input.type = 'password';
-                eye.style.backgroundImage = `url("${iconeFechado}")`;
-            }
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            const eye = document.getElementById('eye-icon');
-            if(eye) eye.style.backgroundImage = `url("${iconeFechado}")`;
-        });
-
         const itens = [
             {p: "Bag suspenso A + caixa", l: "Abastecimento", c: "1575", type: "PET"},
             {p: "Bag suspenso B + caixa", l: "Abastecimento", c: "1575", type: "PET"},
@@ -248,104 +236,93 @@
             {p: "Bags avulsos (dinamo)", l: "Dinamo", c: "Pesag.", type: "MIX"}
         ];
 
-        function mostrarAlerta(msg, tipo = 'aviso') {
-            const modal = document.getElementById('custom-alert');
-            const title = document.getElementById('alert-title');
-            const msgEl = document.getElementById('alert-msg');
-            const btnArea = document.getElementById('alert-btns');
-            msgEl.innerText = msg;
-            btnArea.innerHTML = "";
-            if (tipo === 'confirmar') {
-                title.innerText = "Confirmar Ação";
-                btnArea.innerHTML = `<button class="btn-alert-ok" onclick="executarLimpeza()">SIM, LIMPAR</button><button class="btn-alert-cancel" onclick="fecharAlerta()">CANCELAR</button>`;
-            } else {
-                title.innerText = "Atenção!";
-                btnArea.innerHTML = `<button class="btn-alert-ok" onclick="fecharAlerta()">ENTENDI</button>`;
-            }
-            modal.style.display = 'flex';
-        }
-
-        function fecharAlerta() { document.getElementById('custom-alert').style.display = 'none'; }
-        function confirmarLimpeza() { mostrarAlerta("Deseja realmente limpar todos os dados do inventário? Essa ação não pode ser desfeita.", 'confirmar'); }
-        function executarLimpeza() {
-            document.querySelectorAll('.peso').forEach(i => i.value = "");
-            document.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
-            document.getElementById('sys_v').value = document.getElementById('sys_0t').value = document.getElementById('sys_10t').value = "";
-            document.getElementById('resp').value = "";
-            calc();
-            fecharAlerta();
-        }
-
         function render() {
             const body = document.getElementById('table-body');
             body.innerHTML = "";
             itens.forEach((it, i) => {
                 const tr = document.createElement('tr');
                 const isMix = it.type === "MIX";
-                const nextId = (i < itens.length - 1) ? `peso-${i+1}` : null;
+                let seletorHtml = isMix ? `
+                    <select id="sel-${i}" class="select-resina" onchange="tratarMudancaResina(this, ${i});calc()">
+                        <option value="0010048">0010048 - PCR 0T</option>
+                        <option value="0010030">0010030 - PCR 10T</option>
+                        <option value="0010023">0010023 - ACQUAMIX</option>
+                        <option value="0010066">0010066 - PCR GLOBAL</option>
+                        <option value="0010080">0010080 - VALGROUP</option>
+                    </select>` : `<span style="font-size:11px;">${it.type === "PET" ? "0010006 - PET" : (it.type === "0T" ? "0010048 - 0T" : "0010030 - 10T")}</span>`;
+
                 tr.innerHTML = `
-                    <td style="text-align:left;">${it.p}</td><td>${it.l}</td><td>${it.c}</td>
-                    <td><input type="number" class="peso editable" id="peso-${i}" oninput="calc()" onkeydown="handleEnter(event, ${nextId ? `'${nextId}'` : 'null'})" placeholder=""></td>
-                    ${[25,50,75,100].map(v => `<td><input type="checkbox" name="m${i}" onclick="unck(this, ${i});calc()" data-type="0t" data-val="${v}" ${!isMix?'disabled':''}></td>`).join('')}
-                    ${[25,50,75,100].map(v => `<td><input type="checkbox" name="m${i}" onclick="unck(this, ${i});calc()" data-type="10t" data-val="${v}" ${!isMix?'disabled':''}></td>`).join('')}
-                    <td class="rv">0.0</td><td class="r0">0.0</td><td class="r10">0.0</td>
+                    <td style="text-align:left; font-weight:bold;">${it.p}</td><td>${it.l}</td><td>${it.c}</td>
+                    <td><input type="number" class="peso editable" id="peso-${i}" oninput="calc()" placeholder=""></td>
+                    <td>${seletorHtml}</td>
+                    ${[25,50,75,100].map(v => `<td><input type="checkbox" name="m${i}" id="chk-${i}-${v}" onclick="unck(this, ${i});calc()" data-val="${v}" ${!isMix?'disabled':''}></td>`).join('')}
+                    <td class="rv res-val">0.0</td><td class="r0 res-val">0.0</td><td class="r10 res-val">0.0</td>
+                    <td class="racq res-val">0.0</td><td class="rglo res-val">0.0</td><td class="rval res-val">0.0</td>
                 `;
                 body.appendChild(tr);
             });
         }
 
-        function handleEnter(event, nextId) {
-            if (event.key === "Enter") {
-                event.preventDefault();
-                if (nextId) document.getElementById(nextId).focus();
-                else { calc(); const sV = document.getElementById('sys_v').value; const s0 = document.getElementById('sys_0t').value; const s10 = document.getElementById('sys_10t').value; if (!sV || !s0 || !s10) { mostrarAlerta("Contagem finalizada! Agora informe o Saldo no Sistema no topo da tabela."); window.scrollTo({top: 0, behavior: 'smooth'}); } else { mostrarAlerta("Contagem finalizada com sucesso!"); } }
-            }
-        }
-
-        function unck(el, index) { 
-            const pesoInput = document.getElementById(`peso-${index}`);
-            if (el.checked && (!pesoInput.value || parseFloat(pesoInput.value) <= 0)) {
-                el.checked = false;
-                mostrarAlerta("Informe o peso encontrado neste ponto antes de selecionar a porcentagem do Mix.");
-                return;
-            }
-            document.getElementsByName(el.name).forEach(c => { if(c !== el) c.checked = false; }); 
+        function tratarMudancaResina(selectEl, index) {
+            const ehAcquamix = selectEl.value === "0010023";
+            [25, 50, 75, 100].forEach(v => {
+                const chk = document.getElementById(`chk-${index}-${v}`);
+                if (chk && ehAcquamix) { chk.checked = false; chk.disabled = true; } 
+                else if (chk) { chk.disabled = false; }
+            });
         }
 
         function calc() {
-            let tV = 0, t0 = 0, t10 = 0;
+            let tV = 0, t0 = 0, t10 = 0, tAcq = 0, tGlo = 0, tVal = 0;
             document.querySelectorAll('#table-body tr').forEach((tr, i) => {
                 const p = parseFloat(tr.querySelector('.peso').value) || 0;
                 const chk = tr.querySelector('input:checked');
-                let v = 0, p0 = 0, p10 = 0;
+                const select = tr.querySelector('.select-resina');
+                let v = 0, p0 = 0, p10 = 0, acq = 0, glo = 0, valg = 0;
+
                 if (itens[i].type === "PET") v = p;
                 else if (itens[i].type === "0T") p0 = p;
                 else if (itens[i].type === "10T") p10 = p;
-                else if (itens[i].type === "MIX" && chk) {
-                    let val = parseInt(chk.dataset.val)/100;
-                    if(chk.dataset.type === '0t') { p0 = p * val; v = p - p0; }
-                    else { p10 = p * val; v = p - p10; }
-                } else { v = p; }
-                tr.querySelector('.rv').innerText = v.toFixed(1);
-                tr.querySelector('.r0').innerText = p0.toFixed(1);
-                tr.querySelector('.r10').innerText = p10.toFixed(1);
-                tV += v; t0 += p0; t10 += p10;
+                else if (itens[i].type === "MIX") {
+                    if (select && select.value === "0010023") acq = p;
+                    else if (chk) {
+                        let fator = parseInt(chk.dataset.val) / 100;
+                        let qMix = p * fator;
+                        v = p - qMix;
+                        if (select.value === "0010048") p0 = qMix;
+                        else if (select.value === "0010030") p10 = qMix;
+                        else if (select.value === "0010066") glo = qMix;
+                        else if (select.value === "0010080") valg = qMix;
+                    } else { v = p; }
+                }
+                tr.querySelector('.rv').innerText = v.toFixed(1); tr.querySelector('.r0').innerText = p0.toFixed(1);
+                tr.querySelector('.r10').innerText = p10.toFixed(1); tr.querySelector('.racq').innerText = acq.toFixed(1);
+                tr.querySelector('.rglo').innerText = glo.toFixed(1); tr.querySelector('.rval').innerText = valg.toFixed(1);
+                tV += v; t0 += p0; t10 += p10; tAcq += acq; tGlo += glo; tVal += valg;
             });
-            document.getElementById('tot_v').innerText = document.getElementById('som_v').innerText = tV.toFixed(2);
-            document.getElementById('tot_0t').innerText = document.getElementById('som_0t').innerText = t0.toFixed(2);
-            document.getElementById('tot_10t').innerText = document.getElementById('som_10t').innerText = t10.toFixed(2);
+            document.getElementById('tot_v').innerText = document.getElementById('som_v').innerText = tV.toFixed(1);
+            document.getElementById('tot_0t').innerText = document.getElementById('som_0t').innerText = t0.toFixed(1);
+            document.getElementById('tot_10t').innerText = document.getElementById('som_10t').innerText = t10.toFixed(1);
+            document.getElementById('tot_acq').innerText = document.getElementById('som_acq').innerText = tAcq.toFixed(1);
+            document.getElementById('tot_glo').innerText = document.getElementById('som_glo').innerText = tGlo.toFixed(1);
+            document.getElementById('tot_val').innerText = document.getElementById('som_val').innerText = tVal.toFixed(1);
+            
             const sysV = parseFloat(document.getElementById('sys_v').value) || 0;
             const sys0 = parseFloat(document.getElementById('sys_0t').value) || 0;
             const sys10 = parseFloat(document.getElementById('sys_10t').value) || 0;
-            const dV = tV - sysV; const d0 = t0 - sys0; const d10 = t10 - sys10;
-            document.getElementById('dif_v').innerText = dV.toFixed(2);
-            document.getElementById('dif_0t').innerText = d0.toFixed(2);
-            document.getElementById('dif_10t').innerText = d10.toFixed(2);
-            [ {id:'dif_v', v:dV}, {id:'dif_0t', v:d0}, {id:'dif_10t', v:d10} ].forEach(d => {
-                const el = document.getElementById(d.id);
-                el.style.color = d.v < 0 ? '#d00000' : (d.v > 0 ? '#008000' : '#000');
-            });
+            const sysAcq = parseFloat(document.getElementById('sys_acq').value) || 0;
+            const sysGlo = parseFloat(document.getElementById('sys_glo').value) || 0;
+            const sysVal = parseFloat(document.getElementById('sys_val').value) || 0;
+
+            document.getElementById('dif_v').innerText = (tV - sysV).toFixed(1);
+            document.getElementById('dif_0t').innerText = (t0 - sys0).toFixed(1);
+            document.getElementById('dif_10t').innerText = (t10 - sys10).toFixed(1);
+            document.getElementById('dif_acq').innerText = (tAcq - sysAcq).toFixed(1);
+            document.getElementById('dif_glo').innerText = (tGlo - sysGlo).toFixed(1);
+            document.getElementById('dif_val').innerText = (tVal - sysVal).toFixed(1);
         }
+
+        function unck(el, index) { document.getElementsByName(el.name).forEach(c => { if(c !== el) c.checked = false; }); }
 
         function validarAcesso() {
             const u = document.getElementById('user_in').value;
@@ -358,54 +335,18 @@
             } else { alert("Acesso Negado!"); }
         }
 
+        function confirmarLimpeza() {
+            document.getElementById('alert-msg').innerText = "Deseja realmente limpar todos os dados?";
+            document.getElementById('alert-btns').innerHTML = `<button onclick="location.reload()" class="btn-alert-ok">SIM</button> <button onclick="document.getElementById('custom-alert').style.display='none'" style="padding:12px; border:none; border-radius:5px; cursor:pointer;">NÃO</button>`;
+            document.getElementById('custom-alert').style.display = 'flex';
+        }
+
         function enviarEmail() {
             const resp = document.getElementById('resp').value;
-            const sysV = document.getElementById('sys_v').value;
-            const sys0 = document.getElementById('sys_0t').value;
-            const sys10 = document.getElementById('sys_10t').value;
-
-            if (!resp) { mostrarAlerta("Preencha o seu nome no campo Responsável."); return; }
-            if (!sysV || !sys0 || !sys10) { mostrarAlerta("Preencha os três saldos do sistema no topo da tabela."); window.scrollTo({top: 0, behavior: 'smooth'}); return; }
-
-            let fP = false; 
-            document.querySelectorAll('.peso').forEach(i => { if (i.value === "") fP = true; });
-            if (fP) { mostrarAlerta("Existem pontos de contagem sem peso informado na tabela."); return; }
-
+            if (!resp) { alert("Nome do responsável obrigatório!"); return; }
             const dt = document.getElementById('current-time').innerText;
-            const tV = document.getElementById('tot_v').innerText;
-            const t0 = document.getElementById('tot_0t').innerText;
-            const t10 = document.getElementById('tot_10t').innerText;
-            const dV = document.getElementById('dif_v').innerText;
-            const d0 = document.getElementById('dif_0t').innerText;
-            const d10 = document.getElementById('dif_10t').innerText;
-
-            let detalhamento = "%0D%0ADETALHAMENTO POR PONTO:%0D%0A";
-            document.querySelectorAll('#table-body tr').forEach((tr, i) => {
-                const pesoDigitado = tr.querySelector('.peso').value;
-                const nomePonto = itens[i].p;
-                const localPonto = itens[i].l;
-                const chk = tr.querySelector('input:checked');
-                
-                let infoMix = "";
-                if (itens[i].type === "PET") infoMix = "PET VIRGEM";
-                else if (itens[i].type === "0T") infoMix = "PCR 0T";
-                else if (itens[i].type === "10T") infoMix = "PCR 10T";
-                else if (itens[i].type === "MIX") {
-                    if (chk) {
-                        const perc = chk.dataset.val;
-                        const tipoMix = chk.dataset.type === '0t' ? '0T' : '10T';
-                        infoMix = `MIX (${perc}% ${tipoMix} / ${100-perc}% PET)`;
-                    } else {
-                        infoMix = "100% PET (Sem Mix selecionado)";
-                    }
-                }
-                detalhamento += `- ${nomePonto} (${localPonto}): ${pesoDigitado} KG -> ${infoMix}%0D%0A`;
-            });
-
-            const ass = `Resumo de Inventário - ${resp}`;
-            const corpo = `RELATÓRIO DE INVENTÁRIO DE RESINAS%0D%0AData/Hora: ${dt}%0D%0AResponsável: ${resp}%0D%0A%0D%0A--- RESUMO GERAL ---%0D%0A1. PET VIRGEM (0010006)%0D%0A- Físico: ${tV} KG%0D%0A- Sistema: ${sysV} KG%0D%0A- Diferença: ${dV} KG%0D%0A%0D%0A2. PCR 0T (0010048)%0D%0A- Físico: ${t0} KG%0D%0A- Sistema: ${sys0} KG%0D%0A- Diferença: ${d0} KG%0D%0A%0D%0A3. PCR 10T (0010030)%0D%0A- Físico: ${t10} KG%0D%0A- Sistema: ${sys10} KG%0D%0A- Diferença: ${d10} KG%0D%0A%0D%0A-------------------------------------------%0D%0A${detalhamento}%0D%0A-------------------------------------------%0D%0AEnviado via App Inventário Spiltag.`;
-
-            window.location.href = `mailto:joao.pedroso@spiltag.com?cc=quenia.oliveira@spiltag.com&subject=${encodeURIComponent(ass)}&body=${corpo}`;
+            const corpo = `BALANÇO DE RESINAS%0D%0Data: ${dt}%0D%0AResponsável: ${resp}%0D%0A%0D%0A1. PET: Físico ${document.getElementById('tot_v').innerText} | Sistema ${document.getElementById('sys_v').value} | Dif ${document.getElementById('dif_v').innerText}...`;
+            window.location.href = `mailto:joao.pedroso@spiltag.com?subject=Inventario ${resp}&body=${corpo}`;
         }
     </script>
 </body>
