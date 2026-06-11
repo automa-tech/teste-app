@@ -112,7 +112,7 @@
 
     <div id="app-content">
         <div class="no-print">
-            <button class="btn-pdf" onclick="window.print()">IMPRIMIR PDF / SALVAR</button>
+            <button class="btn-pdf" onclick="window.print()">IMPRIMIR PDF</button>
             <button class="btn-email" onclick="enviarEmail()">ENVIAR RELATÓRIO</button>
             <button class="btn-clear" onclick="confirmarLimpeza()">LIMPAR TUDO</button>
         </div>
@@ -359,7 +359,7 @@
 
         function mostrarAlertaCustomizado(msg) {
             const modal = document.getElementById('custom-alert');
-            document.getElementById('alert-title').innerText = "Acesso Negado!";
+            document.getElementById('alert-title').innerText = "ATENÇÃO!";
             document.getElementById('alert-msg').innerText = msg;
             document.getElementById('alert-btns').innerHTML = `<button class="btn-alert-ok" onclick="document.getElementById('custom-alert').style.display='none'">OK</button>`;
             modal.style.display = 'flex';
@@ -437,7 +437,7 @@
                 `5. PCR GLOBAL (0010066) -> Contagem: ${tGlo} KG | Saldo Sistema: ${sysGlo} KG | Diferença: ${dGlo} KG%0D%0A` +
                 `6. VALGROUP (0010080)   -> Contagem: ${tVal} KG | Saldo Sistema: ${sysVal} KG | Diferença: ${dVal} KG%0D%0A%0D%0A` +
                 detalhePontos +
-                `-------------------------------------------%0D%0AEnviado via App Inventário Spiltag (Ambiente de Testes).`;
+                `-------------------------------------------%0D%0AEnviado via App Inventário Spiltag.`;
 
             window.location.href = `mailto:joao.pedroso@spiltag.com?cc=quenia.oliveira@spiltag.com&subject=${encodeURIComponent(ass)}&body=${corpo}`;
         }
