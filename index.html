@@ -179,7 +179,7 @@
                 </tr>
                 <tr class="bg-grey" style="font-size: 11px;">
                     <th>25%</th><th>50%</th><th>75%</th><th>100%</th>
-                    <th>PET Vi</th><th>0T</th><th>10T</th><th>ACQUAMIX</th><th>GLOBAL</th><th>VALGROUP</th>
+                    <th>PET VIRGEM</th><th>PCR 0T</th><th>PCR 10T</th><th>ACQUAMIX</th><th>GLOBAL</th><th>VALGROUP</th>
                 </tr>
                 
                 <tbody id="table-body"></tbody>
@@ -257,12 +257,12 @@
                     </select>`;
                 } else {
                     let txtFixo = "";
-                    if (it.type === "PET") txtFixo = "0010006 - PET";
-                    else if (it.type === "0T") txtFixo = "0010048 - 0T";
-                    else if (it.type === "10T") txtFixo = "0010030 - 10T";
-                    else if (it.type === "ACQ") txtFixo = "0010023 - ACQ";
-                    else if (it.type === "GLO") txtFixo = "0010066 - GLO";
-                    else if (it.type === "VAL") txtFixo = "0010080 - VAL";
+                    if (it.type === "PET") txtFixo = "0010006 - PET VIRGEM";
+                    else if (it.type === "0T") txtFixo = "0010048 - PCR 0T";
+                    else if (it.type === "10T") txtFixo = "0010030 - PCR 10T";
+                    else if (it.type === "ACQ") txtFixo = "0010023 - ACQUAMIX";
+                    else if (it.type === "GLO") txtFixo = "0010066 - GLOBAL PET";
+                    else if (it.type === "VAL") txtFixo = "0010080 - VALGROUP";
                     seletorHtml = `<span style="font-size:11px; font-weight:bold;">${txtFixo}</span>`;
                 }
 
