@@ -30,18 +30,15 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 90%; max-width: 380px;
             text-align: center; border-top: 6px solid var(--accent);
         }
-        /* Título e Subtítulo centralizados e com espaçamento da foto */
         .login-box h1 { color: var(--accent); margin: 0 0 10px 0; font-size: 32px; letter-spacing: 2px; font-weight: bold; }
         .login-box p { font-size: 16px; color: #333; margin-bottom: 30px; font-weight: bold; text-transform: uppercase; }
         
-        /* Estilização limpa dos campos de input da foto */
         .login-box input {
             width: 100%; padding: 14px; margin: 10px 0; 
             border: 1px solid #ccc; border-radius: 6px; 
             box-sizing: border-box; font-size: 16px;
             background-color: #fff; text-align: center;
         }
-        /* Corrigindo os placeholders para ficarem centralizados e limpos */
         .login-box input::placeholder { color: #888; font-weight: normal; opacity: 1; }
 
         .btn-login {
@@ -106,7 +103,8 @@
     <div id="login-screen">
         <div class="login-box">
             <h1>SPILTAG</h1>
-            <p>INVENTÁRIO DE RESINAS</p> <input type="text" id="user_in" placeholder="Usuário">
+            <p>INVENTÁRIO DE RESINAS</p> 
+            <input type="text" id="user_in" placeholder="Usuário">
             <input type="password" id="pass_in" placeholder="Senha">
             <button class="btn-login" onclick="validarAcesso()">ENTRAR NO SISTEMA</button>
         </div>
@@ -200,6 +198,7 @@
     </div>
 
     <script>
+        // Correção de tipos aplicada nos novos itens fixos do final do array
         const itens = [
             {p: "Bag suspenso A + caixa", l: "Abastecimento", c: "1575", type: "PET"},
             {p: "Bag suspenso B + caixa", l: "Abastecimento", c: "1575", type: "PET"},
@@ -232,6 +231,9 @@
             {p: "Bags PET VI 0,80", l: "Sopro", c: "Pesag.", type: "PET"},
             {p: "Bags PCR 0T", l: "Sopro", c: "Pesag.", type: "0T"},
             {p: "Bags PCR 10T", l: "Sopro", c: "Pesag.", type: "10T"},
+            {p: "Bags PET ACQUAMIX", l: "Sopro", c: "Pesag.", type: "ACQ"},  // Ajustado tipo
+            {p: "Bags GLOBAL PET PCR", l: "Sopro", c: "Pesag.", type: "GLO"}, // Ajustado tipo
+            {p: "Bags VALGROUP PCR", l: "Sopro", c: "Pesag.", type: "VAL"},  // Ajustado tipo
             {p: "Desumid. 15", l: "Dinamo", c: "240", type: "MIX"},
             {p: "Bags avulsos (dinamo)", l: "Dinamo", c: "Pesag.", type: "MIX"}
         ];
@@ -242,14 +244,27 @@
             itens.forEach((it, i) => {
                 const tr = document.createElement('tr');
                 const isMix = it.type === "MIX";
-                let seletorHtml = isMix ? `
+                
+                let seletorHtml = "";
+                if (isMix) {
+                    seletorHtml = `
                     <select id="sel-${i}" class="select-resina" onchange="tratarMudancaResina(this, ${i});calc()">
                         <option value="0010048">0010048 - PCR 0T</option>
                         <option value="0010030">0010030 - PCR 10T</option>
                         <option value="0010023">0010023 - ACQUAMIX</option>
                         <option value="0010066">0010066 - PCR GLOBAL</option>
                         <option value="0010080">0010080 - VALGROUP</option>
-                    </select>` : `<span style="font-size:11px;">${it.type === "PET" ? "0010006 - PET" : (it.type === "0T" ? "0010048 - 0T" : "0010030 - 10T")}</span>`;
+                    </select>`;
+                } else {
+                    let txtFixo = "";
+                    if (it.type === "PET") txtFixo = "0010006 - PET";
+                    else if (it.type === "0T") txtFixo = "0010048 - 0T";
+                    else if (it.type === "10T") txtFixo = "0010030 - 10T";
+                    else if (it.type === "ACQ") txtFixo = "0010023 - ACQ";
+                    else if (it.type === "GLO") txtFixo = "0010066 - GLO";
+                    else if (it.type === "VAL") txtFixo = "0010080 - VAL";
+                    seletorHtml = `<span style="font-size:11px; font-weight:bold;">${txtFixo}</span>`;
+                }
 
                 tr.innerHTML = `
                     <td style="text-align:left; font-weight:bold;">${it.p}</td><td>${it.l}</td><td>${it.c}</td>
@@ -280,9 +295,13 @@
                 const select = tr.querySelector('.select-resina');
                 let v = 0, p0 = 0, p10 = 0, acq = 0, glo = 0, valg = 0;
 
+                // Lógica de distribuição corrigida e estendida para as 6 colunas fixas/móveis
                 if (itens[i].type === "PET") v = p;
                 else if (itens[i].type === "0T") p0 = p;
                 else if (itens[i].type === "10T") p10 = p;
+                else if (itens[i].type === "ACQ") acq = p;
+                else if (itens[i].type === "GLO") glo = p;
+                else if (itens[i].type === "VAL") valg = p;
                 else if (itens[i].type === "MIX") {
                     if (select && select.value === "0010023") acq = p;
                     else if (chk) {
@@ -295,11 +314,14 @@
                         else if (select.value === "0010080") valg = qMix;
                     } else { v = p; }
                 }
+                
                 tr.querySelector('.rv').innerText = v.toFixed(1); tr.querySelector('.r0').innerText = p0.toFixed(1);
                 tr.querySelector('.r10').innerText = p10.toFixed(1); tr.querySelector('.racq').innerText = acq.toFixed(1);
                 tr.querySelector('.rglo').innerText = glo.toFixed(1); tr.querySelector('.rval').innerText = valg.toFixed(1);
+                
                 tV += v; t0 += p0; t10 += p10; tAcq += acq; tGlo += glo; tVal += valg;
             });
+            
             document.getElementById('tot_v').innerText = document.getElementById('som_v').innerText = tV.toFixed(1);
             document.getElementById('tot_0t').innerText = document.getElementById('som_0t').innerText = t0.toFixed(1);
             document.getElementById('tot_10t').innerText = document.getElementById('som_10t').innerText = t10.toFixed(1);
@@ -345,7 +367,7 @@
             const resp = document.getElementById('resp').value;
             if (!resp) { alert("Nome do responsável obrigatório!"); return; }
             const dt = document.getElementById('current-time').innerText;
-            const corpo = `BALANÇO DE RESINAS%0D%0Data: ${dt}%0D%0AResponsável: ${resp}%0D%0A%0D%0A1. PET: Físico ${document.getElementById('tot_v').innerText} | Sistema ${document.getElementById('sys_v').value} | Dif ${document.getElementById('dif_v').innerText}...`;
+            const corpo = `BALANÇO DE RESINAS%0D%0AData: ${dt}%0D%0AResponsável: ${resp}%0D%0A%0D%0A1. PET: Físico ${document.getElementById('tot_v').innerText} | Sistema ${document.getElementById('sys_v').value} | Dif ${document.getElementById('dif_v').innerText}...`;
             window.location.href = `mailto:joao.pedroso@spiltag.com?subject=Inventario ${resp}&body=${corpo}`;
         }
     </script>
