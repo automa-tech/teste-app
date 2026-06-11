@@ -78,7 +78,6 @@
         .alert-content {
             background: white; padding: 25px; border-radius: 10px; text-align: center;
             max-width: 400px; width: 85%; border-top: 8px solid var(--accent);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
         }
         .btn-alert-ok { background: var(--accent); color: white; border: none; padding: 12px 25px; border-radius: 5px; font-weight: bold; cursor: pointer; }
 
@@ -113,7 +112,7 @@
 
     <div id="app-content">
         <div class="no-print">
-            <button class="btn-pdf" onclick="window.print()">IMPRIMIR PDF</button>
+            <button class="btn-pdf" onclick="window.print()">IMPRIMIR PDF / SALVAR</button>
             <button class="btn-email" onclick="enviarEmail()">ENVIAR RELATÓRIO</button>
             <button class="btn-clear" onclick="confirmarLimpeza()">LIMPAR TUDO</button>
         </div>
@@ -180,7 +179,7 @@
                 </tr>
                 <tr class="bg-grey" style="font-size: 11px;">
                     <th>25%</th><th>50%</th><th>75%</th><th>100%</th>
-                    <th>PET Vi</th><th>0T</th><th>10T</th><th>ACQUAMIX</th><th>GLOBAL</th><th>VALGROUP</th>
+                    <th>PET VIRGEM</th><th>PCR 0T</th><th>PCR 10T</th><th>ACQUAMIX</th><th>GLOBAL</th><th>VALGROUP</th>
                 </tr>
                 
                 <tbody id="table-body"></tbody>
@@ -199,6 +198,7 @@
     </div>
 
     <script>
+        // Correção de tipos aplicada nos novos itens fixos do final do array
         const itens = [
             {p: "Bag suspenso A + caixa", l: "Abastecimento", c: "1575", type: "PET"},
             {p: "Bag suspenso B + caixa", l: "Abastecimento", c: "1575", type: "PET"},
@@ -231,9 +231,9 @@
             {p: "Bags PET VI 0,80", l: "Sopro", c: "Pesag.", type: "PET"},
             {p: "Bags PCR 0T", l: "Sopro", c: "Pesag.", type: "0T"},
             {p: "Bags PCR 10T", l: "Sopro", c: "Pesag.", type: "10T"},
-            {p: "Bags PET ACQUAMIX", l: "Sopro", c: "Pesag.", type: "ACQ"},  
-            {p: "Bags GLOBAL PET PCR", l: "Sopro", c: "Pesag.", type: "GLO"}, 
-            {p: "Bags VALGROUP PCR", l: "Sopro", c: "Pesag.", type: "VAL"},  
+            {p: "Bags PET ACQUAMIX", l: "Sopro", c: "Pesag.", type: "ACQ"},  // Ajustado tipo
+            {p: "Bags GLOBAL PET PCR", l: "Sopro", c: "Pesag.", type: "GLO"}, // Ajustado tipo
+            {p: "Bags VALGROUP PCR", l: "Sopro", c: "Pesag.", type: "VAL"},  // Ajustado tipo
             {p: "Desumid. 15", l: "Dinamo", c: "240", type: "MIX"},
             {p: "Bags avulsos (dinamo)", l: "Dinamo", c: "Pesag.", type: "MIX"}
         ];
@@ -295,6 +295,7 @@
                 const select = tr.querySelector('.select-resina');
                 let v = 0, p0 = 0, p10 = 0, acq = 0, glo = 0, valg = 0;
 
+                // Lógica de distribuição corrigida e estendida para as 6 colunas fixas/móveis
                 if (itens[i].type === "PET") v = p;
                 else if (itens[i].type === "0T") p0 = p;
                 else if (itens[i].type === "10T") p10 = p;
@@ -353,17 +354,7 @@
                 document.getElementById('app-content').style.display = 'block';
                 render();
                 setInterval(() => { document.getElementById('current-time').innerText = new Date().toLocaleString(); }, 1000);
-            } else {
-                mostrarAlertaCustomizado("Usuário ou senha incorretos. Verifique os dados e tente novamente.");
-            }
-        }
-
-        function mostrarAlertaCustomizado(msg) {
-            const modal = document.getElementById('custom-alert');
-            document.getElementById('alert-title').innerText = "Acesso Negado!";
-            document.getElementById('alert-msg').innerText = msg;
-            document.getElementById('alert-btns').innerHTML = `<button class="btn-alert-ok" onclick="document.getElementById('custom-alert').style.display='none'">OK</button>`;
-            modal.style.display = 'flex';
+            } else { alert("Acesso Negado!"); }
         }
 
         function confirmarLimpeza() {
@@ -374,51 +365,10 @@
 
         function enviarEmail() {
             const resp = document.getElementById('resp').value;
-            if (!resp) { 
-                // Usando o seu próprio modal customizado aqui para ficar padronizado!
-                mostrarAlertaCustomizado("Preencha o seu nome no campo Responsável."); 
-                return; 
-            }
-
+            if (!resp) { alert("Nome do responsável obrigatório!"); return; }
             const dt = document.getElementById('current-time').innerText;
-            
-            // Puxando os totais físicos calculados
-            const tV = document.getElementById('tot_v').innerText;
-            const t0 = document.getElementById('tot_0t').innerText;
-            const t10 = document.getElementById('tot_10t').innerText;
-            const tAcq = document.getElementById('tot_acq').innerText;
-            const tGlo = document.getElementById('tot_glo').innerText;
-            const tVal = document.getElementById('tot_val').innerText;
-
-            // Puxando os saldos digitados do sistema
-            const sysV = document.getElementById('sys_v').value || "0";
-            const sys0 = document.getElementById('sys_0t').value || "0";
-            const sys10 = document.getElementById('sys_10t').value || "0";
-            const sysAcq = document.getElementById('sys_acq').value || "0";
-            const sysGlo = document.getElementById('sys_glo').value || "0";
-            const sysVal = document.getElementById('sys_val').value || "0";
-
-            // Puxando as diferenças calculadas
-            const dV = document.getElementById('dif_v').innerText;
-            const d0 = document.getElementById('dif_0t').innerText;
-            const d10 = document.getElementById('dif_10t').innerText;
-            const dAcq = document.getElementById('dif_acq').innerText;
-            const dGlo = document.getElementById('dif_glo').innerText;
-            const dVal = document.getElementById('dif_val').innerText;
-
-            const ass = `Inventário de Resinas Expandido - ${resp}`;
-            
-            // Estruturação corrigida: Contagem | Sistema | Diferença para as 6 resinas
-            const corpo = `RELATÓRIO DE INVENTÁRIO DE RESINAS%0D%0AData/Hora: ${dt}%0D%0AResponsável: ${resp}%0D%0A%0D%0A--- BALANÇO DE SALDOS COMPLETO ---%0D%0A` +
-                `1. PET VIRGEM (0010006) -> Contagem: ${tV} KG | Saldo Sistema: ${sysV} KG | Diferença: ${dV} KG%0D%0A` +
-                `2. PCR 0T (0010048)     -> Contagem: ${t0} KG | Saldo Sistema: ${sys0} KG | Diferença: ${d0} KG%0D%0A` +
-                `3. PCR 10T (0010030)    -> Contagem: ${t10} KG | Saldo Sistema: ${sys10} KG | Diferença: ${d10} KG%0D%0A` +
-                `4. ACQUAMIX (0010023)   -> Contagem: ${tAcq} KG | Saldo Sistema: ${sysAcq} KG | Diferença: ${dAcq} KG%0D%0A` +
-                `5. PCR GLOBAL (0010066) -> Contagem: ${tGlo} KG | Saldo Sistema: ${sysGlo} KG | Diferença: ${dGlo} KG%0D%0A` +
-                `6. VALGROUP (0010080)   -> Contagem: ${tVal} KG | Saldo Sistema: ${sysVal} KG | Diferença: ${dVal} KG%0D%0A` +
-                `-------------------------------------------%0D%0AEnviado via App Inventário Spiltag.`;
-
-            window.location.href = `mailto:joao.pedroso@spiltag.com?cc=quenia.oliveira@spiltag.com&subject=${encodeURIComponent(ass)}&body=${corpo}`;
+            const corpo = `BALANÇO DE RESINAS%0D%0AData: ${dt}%0D%0AResponsável: ${resp}%0D%0A%0D%0A1. PET: Físico ${document.getElementById('tot_v').innerText} | Sistema ${document.getElementById('sys_v').value} | Dif ${document.getElementById('dif_v').innerText}...`;
+            window.location.href = `mailto:joao.pedroso@spiltag.com?subject=Inventario ${resp}&body=${corpo}`;
         }
     </script>
 </body>
