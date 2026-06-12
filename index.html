@@ -130,8 +130,8 @@
                     <td class="bg-spiltag">PCR 0T<span class="sub-cod">(0010048)</span></td>
                     <td class="bg-spiltag">PCR 10T<span class="sub-cod">(0010030)</span></td>
                     <td class="bg-spiltag">ACQUAMIX<span class="sub-cod">(0010023)</span></td>
-                    <td class="bg-spiltag">PCR GLOBAL<span class="sub-cod">(0010066)</span></td>
-                    <td class="bg-spiltag">VALGROUP<span class="sub-cod">(0010080)</span></td>
+                    <td class="bg-spiltag">VALGROUP<span class="sub-cod">(0010066)</span></td>
+                    <td class="bg-spiltag">PCR GLOBAL<span class="sub-cod">(0010080)</span></td>
                 </tr>
                 
                 <tr>
@@ -251,8 +251,8 @@
                         <option value="0010048">0010048 - PCR 0T</option>
                         <option value="0010030">0010030 - PCR 10T</option>
                         <option value="0010023">0010023 - ACQUAMIX</option>
-                        <option value="0010066">0010066 - PCR GLOBAL</option>
-                        <option value="0010080">0010080 - VALGROUP</option>
+                        <option value="0010066">0010066 - VALGROUP</option>
+                        <option value="0010080">0010080 - PCR GLOBAL</option>
                     </select>`;
                 } else {
                     let txtFixo = "";
@@ -260,8 +260,8 @@
                     else if (it.type === "0T") txtFixo = "0010048 - 0T";
                     else if (it.type === "10T") txtFixo = "0010030 - 10T";
                     else if (it.type === "ACQ") txtFixo = "0010023 - ACQ";
-                    else if (it.type === "GLO") txtFixo = "0010066 - GLO";
-                    else if (it.type === "VAL") txtFixo = "0010080 - VAL";
+                    else if (it.type === "GLO") txtFixo = "0010066 - VAL";
+                    else if (it.type === "VAL") txtFixo = "0010080 - GLO";
                     seletorHtml = `<span style="font-size:11px; font-weight:bold;">${txtFixo}</span>`;
                 }
 
@@ -308,8 +308,8 @@
                         v = p - qMix;
                         if (select.value === "0010048") p0 = qMix;
                         else if (select.value === "0010030") p10 = qMix;
-                        else if (select.value === "0010066") glo = qMix;
-                        else if (select.value === "0010080") valg = qMix;
+                        else if (select.value === "0010066") valg = qMix;
+                        else if (select.value === "0010080") glo = qMix;
                     } else { v = p; }
                 }
                 
@@ -434,8 +434,8 @@
                 `2. PCR 0T (0010048)     -> Contagem: ${t0} KG | Saldo Sistema: ${sys0} KG | Diferença: ${d0} KG%0D%0A` +
                 `3. PCR 10T (0010030)    -> Contagem: ${t10} KG | Saldo Sistema: ${sys10} KG | Diferença: ${d10} KG%0D%0A` +
                 `4. ACQUAMIX (0010023)   -> Contagem: ${tAcq} KG | Saldo Sistema: ${sysAcq} KG | Diferença: ${dAcq} KG%0D%0A` +
-                `5. PCR GLOBAL (0010066) -> Contagem: ${tGlo} KG | Saldo Sistema: ${sysGlo} KG | Diferença: ${dGlo} KG%0D%0A` +
-                `6. VALGROUP (0010080)   -> Contagem: ${tVal} KG | Saldo Sistema: ${sysVal} KG | Diferença: ${dVal} KG%0D%0A%0D%0A` +
+                `5. VALGROUP (0010066) -> Contagem: ${tGlo} KG | Saldo Sistema: ${sysGlo} KG | Diferença: ${dGlo} KG%0D%0A` +
+                `6. PCR GLOBAL (0010080)   -> Contagem: ${tVal} KG | Saldo Sistema: ${sysVal} KG | Diferença: ${dVal} KG%0D%0A%0D%0A` +
                 detalhePontos +
                 `-------------------------------------------%0D%0AEnviado via App Inventário Spiltag.`;
 
