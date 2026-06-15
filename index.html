@@ -368,10 +368,76 @@
 
         function enviarEmail() {
             const resp = document.getElementById('resp').value;
-            if (!resp) { alert("Nome do responsável obrigatório!"); return; }
+            if (!resp) { 
+                mostrarAlertaCustomizado("Preencha o seu nome no campo Responsável."); 
+                return; 
+            }
+
             const dt = document.getElementById('current-time').innerText;
-            const corpo = `BALANÇO DE RESINAS%0D%0AData: ${dt}%0D%0AResponsável: ${resp}%0D%0A%0D%0A1. PET: Físico ${document.getElementById('tot_v').innerText} | Sistema ${document.getElementById('sys_v').value} | Dif ${document.getElementById('dif_v').innerText}...`;
-            window.location.href = `mailto:joao.pedroso@spiltag.com?subject=Inventario ${resp}&body=${corpo}`;
+            
+            const tV = document.getElementById('tot_v').innerText;
+            const t0 = document.getElementById('tot_0t').innerText;
+            const t10 = document.getElementById('tot_10t').innerText;
+            const tAcq = document.getElementById('tot_acq').innerText;
+            const tGlo = document.getElementById('tot_glo').innerText;
+            const tVal = document.getElementById('tot_val').innerText;
+
+            const sysV = document.getElementById('sys_v').value || "0";
+            const sys0 = document.getElementById('sys_0t').value || "0";
+            const sys10 = document.getElementById('sys_10t').value || "0";
+            const sysAcq = document.getElementById('sys_acq').value || "0";
+            const sysGlo = document.getElementById('sys_glo').value || "0";
+            const sysVal = document.getElementById('sys_val').value || "0";
+
+            const dV = document.getElementById('dif_v').innerText;
+            const d0 = document.getElementById('dif_0t').innerText;
+            const d10 = document.getElementById('dif_10t').innerText;
+            const dAcq = document.getElementById('dif_acq').innerText;
+            const dGlo = document.getElementById('dif_glo').innerText;
+            const dVal = document.getElementById('dif_val').innerText;
+
+            let detalhePontos = "--- DETALHAMENTO DOS PONTOS DE CONTAGEM ---%0D%0A";
+            let temItemPreenchido = false;
+
+            itens.forEach((it, i) => {
+                const pesoVal = document.getElementById(`peso-${i}`).value;
+                if (pesoVal && parseFloat(pesoVal) > 0) {
+                    temItemPreenchido = true;
+                    let linha = `- ${it.p} (${it.l}): ${pesoVal} KG`;
+                    
+                    if (it.type === "MIX") {
+                        const select = document.getElementById(`sel-${i}`);
+                        if (!select || !select.value) {
+                            linha += ` | [MIX -> NENHUMA RESINA SELECIONADA (100% PET)]`;
+                        } else {
+                            const txtResina = select.options[select.selectedIndex].text;
+                            const chk = document.querySelector(`input[name="m${i}"]:checked`);
+                            const proporcao = chk ? chk.dataset.val + "%" : "0% (Apenas PET)";
+                            linha += ` | [MIX -> Resina: ${txtResina} / Proporção: ${proporcao}]`;
+                        }
+                    } else {
+                        linha += ` | [Carga Fixa Base: ${it.type}]`;
+                    }
+                    detalhePontos += linha + "%0D%0A";
+                }
+            });
+
+            if (!temItemPreenchido) {
+                detalhePontos += "(Nenhum peso foi informado nos pontos de contagem)%0D%0A";
+            }
+
+            const ass = `Inventário de Resinas Expandido - ${resp}`;
+            const corpo = `RELATÓRIO DE INVENTÁRIO DE RESINAS%0D%0AData/Hora: ${dt}%0D%0AResponsável: ${resp}%0D%0A%0D%0A--- BALANÇO DE SALDOS COMPLETO ---%0D%0A` +
+                `1. PET VIRGEM (0010006) -> Contagem: ${tV} KG | Saldo Sistema: ${sysV} KG | Diferença: ${dV} KG%0D%0A` +
+                `2. PCR 0T (0010048)     -> Contagem: ${t0} KG | Saldo Sistema: ${sys0} KG | Diferença: ${d0} KG%0D%0A` +
+                `3. PCR 10T (0010030)    -> Contagem: ${t10} KG | Saldo Sistema: ${sys10} KG | Diferença: ${d10} KG%0D%0A` +
+                `4. ACQUAMIX (0010023)   -> Contagem: ${tAcq} KG | Saldo Sistema: ${sysAcq} KG | Diferença: ${dAcq} KG%0D%0A` +
+                `5. PCR GLOBAL (0010066) -> Contagem: ${tGlo} KG | Saldo Sistema: ${sysGlo} KG | Diferença: ${dGlo} KG%0D%0A` +
+                `6. VALGROUP (0010080)   -> Contagem: ${tVal} KG | Saldo Sistema: ${sysVal} KG | Diferença: ${dVal} KG%0D%0A%0D%0A` +
+                detalhePontos +
+                `-------------------------------------------%0D%0AEnviado via App Inventário Spiltag (Ambiente de Testes).`;
+
+            window.location.href = `mailto:joao.pedroso@spiltag.com?cc=quenia.oliveira@spiltag.com&subject=${encodeURIComponent(ass)}&body=${corpo}`;
         }
     </script>
 </body>
