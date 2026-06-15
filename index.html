@@ -20,7 +20,7 @@
         :root { --border: #000; --header-bg: #e9e9e9; --accent: #a51c30; --btn-grey: #666666; --btn-blue: #0056b3; }
         body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }
 
-        /* TELA DE LOGIN - CONFIGURAÇÃO CORRIGIDA (IGUAL À SEGUNDA FOTO) */
+        /* TELA DE LOGIN */
         #login-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: #f4f4f4; display: flex; align-items: center; justify-content: center; z-index: 9999;
@@ -48,7 +48,7 @@
             text-transform: uppercase;
         }
 
-        /* CONTEÚDO PRINCIPAL (MANTENDO A TABELA SIMÉTRICA QUE FUNCIONA) */
+        /* CONTEÚDO PRINCIPAL */
         #app-content { display: none; padding: 5px; background-color: #fff; }
 
         .no-print { margin-bottom: 10px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; padding: 10px; }
@@ -179,7 +179,7 @@
                 </tr>
                 <tr class="bg-grey" style="font-size: 11px;">
                     <th>25%</th><th>50%</th><th>75%</th><th>100%</th>
-                    <th>PET VIRGEM</th><th>PCR 0T</th><th>PCR 10T</th><th>ACQUAMIX</th><th>GLOBAL</th><th>VALGROUP</th>
+                    <th>PET VIRGEM</th><th>PCR 0T</th><th>PCR 10T</th><th>ACQUAMIX</th><th>VALGROUP</th><th>PCR GLOBAL</th>
                 </tr>
                 
                 <tbody id="table-body"></tbody>
@@ -302,7 +302,6 @@
                 else if (itens[i].type === "GLO") glo = p;
                 else if (itens[i].type === "VAL") valg = p;
                 else if (itens[i].type === "MIX") {
-                    // AJUSTE CIRÚRGICO AQUI: Se o select estiver sem resina marcada (vazio), joga 100% no PET
                     if (select && !select.value) {
                         v = p;
                     }
@@ -320,9 +319,9 @@
                 
                 tr.querySelector('.rv').innerText = v.toFixed(1); tr.querySelector('.r0').innerText = p0.toFixed(1);
                 tr.querySelector('.r10').innerText = p10.toFixed(1); tr.querySelector('.racq').innerText = acq.toFixed(1);
-                tr.querySelector('.rglo').innerText = glo.toFixed(1); tr.querySelector('.rval').innerText = valg.toFixed(1);
+                tr.querySelector('.rglo').innerText = valg.toFixed(1); tr.querySelector('.rval').innerText = glo.toFixed(1);
                 
-                tV += v; t0 += p0; t10 += p10; tAcq += acq; tGlo += glo; tVal += valg;
+                tV += v; t0 += p0; t10 += p10; tAcq += acq; tGlo += valg; tVal += glo;
             });
             
             document.getElementById('tot_v').innerText = document.getElementById('som_v').innerText = tV.toFixed(1);
@@ -358,6 +357,14 @@
                 render();
                 setInterval(() => { document.getElementById('current-time').innerText = new Date().toLocaleString(); }, 1000);
             } else { alert("Acesso Negado!"); }
+        }
+
+        function mostrarAlertaCustomizado(msg) {
+            const modal = document.getElementById('custom-alert');
+            document.getElementById('alert-title').innerText = "ATENÇÃO!";
+            document.getElementById('alert-msg').innerText = msg;
+            document.getElementById('alert-btns').innerHTML = `<button class="btn-alert-ok" onclick="document.getElementById('custom-alert').style.display='none'">OK</button>`;
+            modal.style.display = 'flex';
         }
 
         function confirmarLimpeza() {
@@ -432,8 +439,8 @@
                 `2. PCR 0T (0010048)     -> Contagem: ${t0} KG | Saldo Sistema: ${sys0} KG | Diferença: ${d0} KG%0D%0A` +
                 `3. PCR 10T (0010030)    -> Contagem: ${t10} KG | Saldo Sistema: ${sys10} KG | Diferença: ${d10} KG%0D%0A` +
                 `4. ACQUAMIX (0010023)   -> Contagem: ${tAcq} KG | Saldo Sistema: ${sysAcq} KG | Diferença: ${dAcq} KG%0D%0A` +
-                `5. PCR GLOBAL (0010066) -> Contagem: ${tGlo} KG | Saldo Sistema: ${sysGlo} KG | Diferença: ${dGlo} KG%0D%0A` +
-                `6. VALGROUP (0010080)   -> Contagem: ${tVal} KG | Saldo Sistema: ${sysVal} KG | Diferença: ${dVal} KG%0D%0A%0D%0A` +
+                `5. VALGROUP (0010066)   -> Contagem: ${tGlo} KG | Saldo Sistema: ${sysGlo} KG | Diferença: ${dGlo} KG%0D%0A` +
+                `6. PCR GLOBAL (0010080) -> Contagem: ${tVal} KG | Saldo Sistema: ${sysVal} KG | Diferença: ${dVal} KG%0D%0A%0D%0A` +
                 detalhePontos +
                 `-------------------------------------------%0D%0AEnviado via App Inventário Spiltag (Ambiente de Testes).`;
 
