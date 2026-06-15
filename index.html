@@ -67,6 +67,9 @@
         select.select-resina { width: 98%; font-size: 11px; font-weight: bold; padding: 2px; border: 1px solid #bbb; border-radius: 4px; }
 
         .logo-box { color: var(--accent); font-size: 30px; font-weight: bold; letter-spacing: 2px; }
+        /* CSS AJUSTADO PARA O ICONE NA TABELA */
+        .img-logo-tabela { max-width: 90px; max-height: 90px; object-fit: contain; display: block; margin: 0 auto; }
+        
         .resp-label { background-color: var(--accent); color: white; font-weight: bold; padding: 8px; font-size: 14px; }
         .res-val { font-weight: bold; font-size: 13px; }
         .sub-cod { font-size: 9px !important; font-weight: normal !important; color: #ddd !important; display: block; }
@@ -123,7 +126,7 @@
                     <col style="width: 14%;"> <col style="width: 10%;"> <col style="width: 5%;">  <col style="width: 7%;">  <col style="width: 16%;"> <col style="width: 3.5%;"><col style="width: 3.5%;"><col style="width: 3.5%;"><col style="width: 3.5%;"> <col style="width: 6.8%;"><col style="width: 6.8%;"><col style="width: 6.8%;"><col style="width: 6.8%;"><col style="width: 6.8%;"><col style="width: 6.8%;"> </colgroup>
                 
                 <tr>
-                    <td rowspan="4" class="logo-box">SPILTAG</td>
+                    <td rowspan="4" style="background-color: #fff;"><img src="icon-192.png" alt="Spiltag" class="img-logo-tabela"></td>
                     <td colspan="4" id="current-time" style="font-weight: bold; border-bottom: none;">--/--/---- --:--:--</td>
                     <td class="bg-spiltag" colspan="4">SALDO</td>
                     <td class="bg-spiltag">PET VIRGEM<span class="sub-cod">(0010006)</span></td>
@@ -234,7 +237,7 @@
             {p: "Bags VALGROUP PCR", l: "Sopro", c: "Pesag.", type: "VAL"}, 
             {p: "Bags GLOBAL PET PCR", l: "Sopro", c: "Pesag.", type: "GLO"},  
             {p: "Desumid. 15", l: "Dinamo", c: "240", type: "MIX"},
-            {p: "Bags avulsos (dinamo)", l: "Dinamo", c: "Pesag.", type: "MIX"}
+            {p: "Bags avulsos (Dinamo)", l: "Dinamo", c: "Pesag.", type: "MIX"}
         ];
 
         function render() {
@@ -338,12 +341,42 @@
             const sysGlo = parseFloat(document.getElementById('sys_glo').value) || 0;
             const sysVal = parseFloat(document.getElementById('sys_val').value) || 0;
 
-            document.getElementById('dif_v').innerText = (tV - sysV).toFixed(1);
-            document.getElementById('dif_0t').innerText = (t0 - sys0).toFixed(1);
-            document.getElementById('dif_10t').innerText = (t10 - sys10).toFixed(1);
-            document.getElementById('dif_acq').innerText = (tAcq - sysAcq).toFixed(1);
-            document.getElementById('dif_glo').innerText = (tGlo - sysGlo).toFixed(1);
-            document.getElementById('dif_val').innerText = (tVal - sysVal).toFixed(1);
+            const dV = tV - sysV;
+            const d0 = t0 - sys0;
+            const d10 = t10 - sys10;
+            const dAcq = tAcq - sysAcq;
+            const dGlo = tGlo - sysGlo;
+            const dVal = tVal - sysVal;
+
+            const elDifV = document.getElementById('dif_v');
+            const elDif0 = document.getElementById('dif_0t');
+            const elDif10 = document.getElementById('dif_10t');
+            const elDifAcq = document.getElementById('dif_acq');
+            const elDifGlo = document.getElementById('dif_glo');
+            const elDifVal = document.getElementById('dif_val');
+
+            elDifV.innerText = dV.toFixed(1);
+            elDif0.innerText = d0.toFixed(1);
+            elDif10.innerText = d10.toFixed(1);
+            elDifAcq.innerText = dAcq.toFixed(1);
+            elDifGlo.innerText = dGlo.toFixed(1);
+            elDifVal.innerText = dVal.toFixed(1);
+
+            // AJUSTE 2: Formatação cirúrgica de cores nas fontes das Diferenças
+            const listaDifs = [
+                { el: elDifV, val: dV }, { el: elDif0, val: d0 }, { el: elDif10, val: d10 },
+                { el: elDifAcq, val: dAcq }, { el: elDifGlo, val: dGlo }, { el: elDifVal, val: dVal }
+            ];
+
+            listaDifs.forEach(item => {
+                if (item.val < 0) {
+                    item.el.style.color = '#a51c30'; // Vermelho
+                } else if (item.val > 0) {
+                    item.el.style.color = '#28a745'; // Verde
+                } else {
+                    item.el.style.color = '';        // Padrão (Preto)
+                }
+            });
         }
 
         function unck(el, index) { document.getElementsByName(el.name).forEach(c => { if(c !== el) c.checked = false; }); }
@@ -367,10 +400,37 @@
             modal.style.display = 'flex';
         }
 
+        // AJUSTE 3: Limpar tudo agora apenas zera os dados locais na tela, mantendo o operador logado
         function confirmarLimpeza() {
             document.getElementById('alert-msg').innerText = "Deseja realmente limpar todos os dados?";
-            document.getElementById('alert-btns').innerHTML = `<button onclick="location.reload()" class="btn-alert-ok">SIM</button> <button onclick="document.getElementById('custom-alert').style.display='none'" style="padding:12px; border:none; border-radius:5px; cursor:pointer;">NÃO</button>`;
+            document.getElementById('alert-btns').innerHTML = `
+                <button onclick="limparApenasDados()" class="btn-alert-ok">SIM</button> 
+                <button onclick="document.getElementById('custom-alert').style.display='none'" style="padding:12px; border:none; border-radius:5px; cursor:pointer;">NÃO</button>
+            `;
             document.getElementById('custom-alert').style.display = 'flex';
+        }
+
+        function limparApenasDados() {
+            // Limpa todos os inputs de peso da tabela
+            document.querySelectorAll('#table-body .peso').forEach(input => input.value = '');
+            // Limpa todos os checkboxes marcados
+            document.querySelectorAll('#table-body input[type="checkbox"]').forEach(chk => chk.checked = false);
+            // Reseta os seletores de mix para a posição inicial
+            document.querySelectorAll('#table-body .select-resina').forEach(select => select.value = '');
+            // Zera os inputs do saldo do sistema
+            document.getElementById('sys_v').value = '';
+            document.getElementById('sys_0t').value = '';
+            document.getElementById('sys_10t').value = '';
+            document.getElementById('sys_acq').value = '';
+            document.getElementById('sys_glo').value = '';
+            document.getElementById('sys_val').value = '';
+            // Limpa o nome do responsável
+            document.getElementById('resp').value = '';
+            
+            // Recalcula tudo para zerar as somas e as cores na tela
+            calc();
+            // Fecha a janela de alerta
+            document.getElementById('custom-alert').style.display = 'none';
         }
 
         function enviarEmail() {
@@ -442,7 +502,7 @@
                 `5. VALGROUP (0010066)   -> Contagem: ${tGlo} KG | Saldo Sistema: ${sysGlo} KG | Diferença: ${dGlo} KG%0D%0A` +
                 `6. PCR GLOBAL (0010080) -> Contagem: ${tVal} KG | Saldo Sistema: ${sysVal} KG | Diferença: ${dVal} KG%0D%0A%0D%0A` +
                 detalhePontos +
-                `-------------------------------------------%0D%0AEnviado via App Inventário Spiltag.`;
+                `-------------------------------------------%0D%0AEnviado via App Inventário Spiltag (Ambiente de Testes).`;
 
             window.location.href = `mailto:joao.pedroso@spiltag.com?cc=quenia.oliveira@spiltag.com&subject=${encodeURIComponent(ass)}&body=${corpo}`;
         }
