@@ -51,14 +51,11 @@
         /* CONTEÚDO PRINCIPAL */
         #app-content { display: none; padding: 5px; background-color: #fff; }
 
-        .no-print { margin-bottom: 10px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; padding: 10px; align-items: center; }
+        .no-print { margin-bottom: 10px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; padding: 10px; }
         .btn-pdf { padding: 10px 18px; cursor: pointer; border: 1px solid #000; background-color: var(--accent); color: white; font-weight: bold; border-radius: 4px; }
         .btn-clear { padding: 10px 18px; cursor: pointer; border: 1px solid #000; background-color: var(--btn-grey); color: white; font-weight: bold; border-radius: 4px; }
         .btn-email { padding: 10px 18px; cursor: pointer; border: 1px solid #000; background-color: var(--btn-blue); color: white; font-weight: bold; border-radius: 4px; }
         
-        /* AJUSTE VISUAL: Imagem do logo no painel de controle */
-        .logo-painel { max-height: 40px; width: auto; object-fit: contain; margin-right: auto; margin-left: 20px; }
-
         .container { width: 100%; overflow-x: auto; }
         table { border-collapse: collapse; width: 100%; min-width: 1250px; table-layout: fixed; } 
         th, td { border: 1px solid var(--border); padding: 5px 2px; text-align: center; word-wrap: break-word; font-size: 12px; }
@@ -115,7 +112,6 @@
 
     <div id="app-content">
         <div class="no-print">
-            <img src="logo.png" alt="Logo Spiltag" class="logo-painel">
             <button class="btn-pdf" onclick="window.print()">IMPRIMIR PDF</button>
             <button class="btn-email" onclick="enviarEmail()">ENVIAR RELATÓRIO</button>
             <button class="btn-clear" onclick="confirmarLimpeza()">LIMPAR TUDO</button>
@@ -238,7 +234,7 @@
             {p: "Bags VALGROUP PCR", l: "Sopro", c: "Pesag.", type: "VAL"}, 
             {p: "Bags GLOBAL PET PCR", l: "Sopro", c: "Pesag.", type: "GLO"},  
             {p: "Desumid. 15", l: "Dinamo", c: "240", type: "MIX"},
-            {p: "Bags avulsos (Dinamo)", l: "Dinamo", c: "Pesag.", type: "MIX"}
+            {p: "Bags avulsos (dinamo)", l: "Dinamo", c: "Pesag.", type: "MIX"}
         ];
 
         function render() {
@@ -342,37 +338,12 @@
             const sysGlo = parseFloat(document.getElementById('sys_glo').value) || 0;
             const sysVal = parseFloat(document.getElementById('sys_val').value) || 0;
 
-            // Variáveis de diferença calculadas
-            const dV = tV - sysV;
-            const d0 = t0 - sys0;
-            const d10 = t10 - sys10;
-            const dAcq = tAcq - sysAcq;
-            const dGlo = tGlo - sysGlo;
-            const dVal = tVal - sysVal;
-
-            const elDifV = document.getElementById('dif_v');
-            const elDif0 = document.getElementById('dif_0t');
-            const elDif10 = document.getElementById('dif_10t');
-            const elDifAcq = document.getElementById('dif_acq');
-            const elDifGlo = document.getElementById('dif_glo');
-            const elDifVal = document.getElementById('dif_val');
-
-            elDifV.innerText = dV.toFixed(1);
-            elDif0.innerText = d0.toFixed(1);
-            elDif10.innerText = d10.toFixed(1);
-            elDifAcq.innerText = dAcq.toFixed(1);
-            elDifGlo.innerText = dGlo.toFixed(1);
-            elDifVal.innerText = dVal.toFixed(1);
-
-            // AJUSTE VISUAL: Formatação condicional de cores nas diferenças (Verde/Vermelho/Preto)
-            const listasDifs = [
-                { el: elDifV, val: dV }, { el: elDif0, val: d0 }, { el: elDif10, val: d10 },
-                { el: elDifAcq, val: dAcq }, { el: elDifGlo, val: dGlo }, { el: elDifVal, val: dVal }
-            ];
-
-            listasDifs.forEach(item => {
-                item.el.style.color = item.val < 0 ? '#a51c30' : (item.val > 0 ? '#28a745' : '');
-            });
+            document.getElementById('dif_v').innerText = (tV - sysV).toFixed(1);
+            document.getElementById('dif_0t').innerText = (t0 - sys0).toFixed(1);
+            document.getElementById('dif_10t').innerText = (t10 - sys10).toFixed(1);
+            document.getElementById('dif_acq').innerText = (tAcq - sysAcq).toFixed(1);
+            document.getElementById('dif_glo').innerText = (tGlo - sysGlo).toFixed(1);
+            document.getElementById('dif_val').innerText = (tVal - sysVal).toFixed(1);
         }
 
         function unck(el, index) { document.getElementsByName(el.name).forEach(c => { if(c !== el) c.checked = false; }); }
@@ -396,7 +367,6 @@
             modal.style.display = 'flex';
         }
 
-        // AJUSTE DE NAVEGAÇÃO: Limpar tudo agora dá um reload completo, forçando o logout para a tela de login
         function confirmarLimpeza() {
             document.getElementById('alert-msg').innerText = "Deseja realmente limpar todos os dados?";
             document.getElementById('alert-btns').innerHTML = `<button onclick="location.reload()" class="btn-alert-ok">SIM</button> <button onclick="document.getElementById('custom-alert').style.display='none'" style="padding:12px; border:none; border-radius:5px; cursor:pointer;">NÃO</button>`;
@@ -472,7 +442,7 @@
                 `5. VALGROUP (0010066)   -> Contagem: ${tGlo} KG | Saldo Sistema: ${sysGlo} KG | Diferença: ${dGlo} KG%0D%0A` +
                 `6. PCR GLOBAL (0010080) -> Contagem: ${tVal} KG | Saldo Sistema: ${sysVal} KG | Diferença: ${dVal} KG%0D%0A%0D%0A` +
                 detalhePontos +
-                `-------------------------------------------%0D%0AEnviado via App Inventário Spiltag (Ambiente de Testes).`;
+                `-------------------------------------------%0D%0AEnviado via App Inventário Spiltag.`;
 
             window.location.href = `mailto:joao.pedroso@spiltag.com?cc=quenia.oliveira@spiltag.com&subject=${encodeURIComponent(ass)}&body=${corpo}`;
         }
