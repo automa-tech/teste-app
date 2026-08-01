@@ -1,12 +1,24 @@
 {
-  "name": "Contagem de Resina - Spiltag",
-  "short_name": "Contagem de Resina",
-  "start_url": "index.html",
+  "name": "Sistema de Inventário Spiltag",
+  "short_name": "Inventário Spiltag",
+  "description": "Aplicativo para registro e controle de inventário industrial por setores",
+  "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#f4f4f4",
+  "background_color": "#001f3f",
   "theme_color": "#a51c30",
+  "orientation": "portrait-primary",
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
   ]
 }
