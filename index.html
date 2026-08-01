@@ -487,29 +487,32 @@
             }
         }
 
+        // FUNÇÃO BIPE AJUSTADA PARA ACEITAR TANTO '}' QUANTO '|'
         function bipe(el, i, prefix) {
             let v = el.value.trim();
             const qtdField = document.getElementById(`${prefix}-qtd-${i}`);
+            
             if (v === "") {
                 document.getElementById(`${prefix}-mat-${i}`).value = "";
                 document.getElementById(`${prefix}-lote-${i}`).value = "";
-                qtdField.value = ""; 
+                if (qtdField) qtdField.value = ""; 
                 return;
             }
+            
             processandoBipe = true;
-            let partes = v.split('}');
+            
+            // PADRONIZAÇÃO: Converte '|' para '}' se for digitado manualmente
+            let vPadronizado = v.replace('|', '}');
+            let partes = vPadronizado.split('}');
+            
             if (partes.length >= 2) {
-                document.getElementById(`${prefix}-mat-${i}`).value = partes[0];
-                document.getElementById(`${prefix}-lote-${i}`).value = partes[1];
-                qtdField.value = "";
+                document.getElementById(`${prefix}-mat-${i}`).value = partes[0].trim();
+                document.getElementById(`${prefix}-lote-${i}`).value = partes[1].trim();
                 
-                let limpador = setInterval(() => { qtdField.value = ""; }, 10);
+                // Se foi leitor rápido ou digitação manual, garante o manuseio suave do foco
                 setTimeout(() => { 
-                    clearInterval(limpador); 
-                    qtdField.value = ""; 
-                    qtdField.focus(); 
                     processandoBipe = false; 
-                }, 300);
+                }, 100);
             }
         }
 
