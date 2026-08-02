@@ -635,7 +635,7 @@
             
             let dados = { setor: configSetores[setorLogado].label, responsavel: resp, itens: [] };
             
-            // 1. CAPTURA DOS OUTROS SETORES (SE NÃO FOR MASTER)
+            // 1. CAPTURA DOS OUTROS SETORES (INJEÇÃO, DECORAÇÃO, DÍNAMO)
             if (setorLogado !== "master") {
                 const limitePA = configSetores[setorLogado].linhasPA;
                 for (let i = 0; i < limitePA; i++) {
@@ -643,8 +643,7 @@
                     let dsMat = document.getElementById(`papi-ds-${i}`).value.trim();
                     let loteMat = document.getElementById(`papi-lote-${i}`).value.trim();
                     let umMat = document.getElementById(`papi-um-${i}`).value.trim();
-                    let qtdMatStr = document.getElementById(`papi-qtd-${i}`).value.trim();
-                    let qtdMatNum = parseFloat(qtdMatStr) || 0;
+                    let qtdMatNum = parseFloat(document.getElementById(`papi-qtd-${i}`).value) || 0;
 
                     if (qtdMatNum > 0 && codMat) {
                         dados.itens.push({ codigo: codMat, descricao: dsMat, lote: loteMat, um: umMat, qtd: qtdMatNum });
@@ -691,7 +690,7 @@
                 }
             }
 
-            // 2. CAPTURA EXCLUSIVA DO SETOR MASTER OU DÍNAMO
+            // 2. CAPTURA DO SETOR MASTER OU DÍNAMO (MESMA LÓGICA DE PA/PI SEM FORÇAR DESCRIÇÃO TEXTUAL)
             if (setorLogado === "dinamo" || setorLogado === "master") {
                 const limiteMaster = configSetores[setorLogado].linhasPA;
                 for (let i = 0; i < limiteMaster; i++) {
@@ -703,7 +702,7 @@
                     let qtdMatStr = document.getElementById(`mst-qtd-${i}`).value.trim();
                     let qtdMatNum = parseFloat(qtdMatStr) || 0;
 
-                    // Garante a extração de código e lote mesmo digitando sem leitor
+                    // Se foi digitado na mão sem disparar a troca automática
                     if ((!codMat || !loteMat) && lido !== "") {
                         let lidoPadrao = lido.replace('|', '}');
                         let partes = lidoPadrao.split('}');
@@ -728,7 +727,7 @@
                 }
             }
 
-            // 3. VARREDURA RÁPIDA: SOMA DE CÓDIGOS + LOTES IGUAIS
+            // 3. VARREDURA E AGRUPAMENTO: SOMA AUTOMÁTICA DAS QUANTIDADES COM MESMO CÓDIGO E LOTE
             let mapaConsolidado = {};
             dados.itens.forEach(item => {
                 let chave = `${item.codigo.trim()}_${item.lote.trim()}`;
@@ -744,7 +743,7 @@
                 mapaConsolidado[chave].qtd += item.qtd;
             });
 
-            // Re-converte em lista com a quantidade formatada
+            // Formata para o envio aceito pela planilha
             dados.itens = Object.values(mapaConsolidado).map(it => {
                 return {
                     codigo: it.codigo,
