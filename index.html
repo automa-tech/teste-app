@@ -490,7 +490,7 @@
             }
         }
 
-        // BIPE COMPATÍVEL COM LEITOR ('}') E DIGITAÇÃO MANUAL ('|')
+        // SEPARADOR DE CÓDIGO E LOTE (ACEITA '}' E '|')
         function bipe(el, i, prefix) {
             let v = el.value.trim();
             const qtdField = document.getElementById(`${prefix}-qtd-${i}`);
@@ -626,6 +626,7 @@
             }
         }
 
+        // ENVIO DIRETO SEM NENHUMA REGRA DE SOMA (EXATAMENTE O PADRÃO ORIGINAL)
         function validarResponsavel() {
             const resp = document.getElementById('resp-name').value.trim();
             if (!resp) { document.getElementById('modalAvisoResp').style.display = 'block'; return; }
@@ -635,7 +636,7 @@
             
             let dados = { setor: configSetores[setorLogado].label, responsavel: resp, itens: [] };
             
-            // 1. CAPTURA DOS OUTROS SETORES (INJEÇÃO, DECORAÇÃO, DÍNAMO)
+            // 1. DEMAIS SETORES
             if (setorLogado !== "master") {
                 const limitePA = configSetores[setorLogado].linhasPA;
                 for (let i = 0; i < limitePA; i++) {
@@ -643,10 +644,10 @@
                     let dsMat = document.getElementById(`papi-ds-${i}`).value.trim();
                     let loteMat = document.getElementById(`papi-lote-${i}`).value.trim();
                     let umMat = document.getElementById(`papi-um-${i}`).value.trim();
-                    let qtdMatNum = parseFloat(document.getElementById(`papi-qtd-${i}`).value) || 0;
+                    let qtdMat = document.getElementById(`papi-qtd-${i}`).value.trim();
 
-                    if (qtdMatNum > 0 && codMat) {
-                        dados.itens.push({ codigo: codMat, descricao: dsMat, lote: loteMat, um: umMat, qtd: qtdMatNum });
+                    if (qtdMat !== "" && codMat) {
+                        dados.itens.push({ codigo: codMat, descricao: dsMat, lote: loteMat, um: umMat, qtd: qtdMat });
                     }
                 }
                 
@@ -655,8 +656,8 @@
                 if (setorLogado === "dinamo") listaInsumos = insumosDinamoGeral;
                 
                 listaInsumos.forEach((it, i) => {
-                    let qtdIns = parseFloat(document.getElementById('ins-qtd-' + i).value) || 0;
-                    if (qtdIns > 0) {
+                    let qtdIns = document.getElementById('ins-qtd-' + i).value.trim();
+                    if (qtdIns !== "") {
                         dados.itens.push({ codigo: it.id, descricao: it.ds, lote: "N/A", um: it.um, qtd: qtdIns });
                     }
                 });
@@ -667,14 +668,14 @@
                         let dsMat = document.getElementById(`slvpapi-ds-${i}`).value.trim();
                         let loteMat = document.getElementById(`slvpapi-lote-${i}`).value.trim();
                         let umMat = document.getElementById(`slvpapi-um-${i}`).value.trim();
-                        let qtdMatNum = parseFloat(document.getElementById(`slvpapi-qtd-${i}`).value) || 0;
-                        if (qtdMatNum > 0 && codMat) {
-                            dados.itens.push({ codigo: codMat, descricao: dsMat, lote: loteMat, um: umMat, qtd: qtdMatNum });
+                        let qtdMat = document.getElementById(`slvpapi-qtd-${i}`).value.trim();
+                        if (qtdMat !== "" && codMat) {
+                            dados.itens.push({ codigo: codMat, descricao: dsMat, lote: loteMat, um: umMat, qtd: qtdMat });
                         }
                     }
                     insumosDecoracaoSleeve.forEach((it, i) => {
-                        let qtdIns = parseFloat(document.getElementById(`slvins-qtd-${i}`).value) || 0;
-                        if (qtdIns > 0) {
+                        let qtdIns = document.getElementById(`slvins-qtd-${i}`).value.trim();
+                        if (qtdIns !== "") {
                             dados.itens.push({ codigo: it.id, descricao: it.ds, lote: "N/A", um: it.um, qtd: qtdIns });
                         }
                     });
@@ -682,15 +683,15 @@
 
                 if (setorLogado === "dinamo") {
                     resinasDinamoFixas.forEach((it, i) => {
-                        let qtdRes = parseFloat(document.getElementById(`res-qtd-${i}`).value) || 0;
-                        if (qtdRes > 0) {
+                        let qtdRes = document.getElementById(`res-qtd-${i}`).value.trim();
+                        if (qtdRes !== "") {
                             dados.itens.push({ codigo: it.id, descricao: it.ds, lote: "N/A", um: "KG", qtd: qtdRes });
                         }
                     });
                 }
             }
 
-            // 2. CAPTURA DO SETOR MASTER OU DÍNAMO (MESMA LÓGICA DE PA/PI SEM FORÇAR DESCRIÇÃO TEXTUAL)
+            // 2. CAPTURA DO SETOR MASTER OU DÍNAMO
             if (setorLogado === "dinamo" || setorLogado === "master") {
                 const limiteMaster = configSetores[setorLogado].linhasPA;
                 for (let i = 0; i < limiteMaster; i++) {
@@ -699,10 +700,9 @@
                     let dsMat = document.getElementById(`mst-ds-${i}`).value.trim();
                     let loteMat = document.getElementById(`mst-lote-${i}`).value.trim();
                     let umMat = document.getElementById(`mst-um-${i}`).value.trim() || "KG";
-                    let qtdMatStr = document.getElementById(`mst-qtd-${i}`).value.trim();
-                    let qtdMatNum = parseFloat(qtdMatStr) || 0;
+                    let qtdMat = document.getElementById(`mst-qtd-${i}`).value.trim();
 
-                    // Se foi digitado na mão sem disparar a troca automática
+                    // Se foi digitado manualmente e os campos ocultos não preencheram
                     if ((!codMat || !loteMat) && lido !== "") {
                         let lidoPadrao = lido.replace('|', '}');
                         let partes = lidoPadrao.split('}');
@@ -715,44 +715,17 @@
                         }
                     }
 
-                    if (qtdMatNum > 0 && codMat) {
+                    if (qtdMat !== "" && codMat) {
                         dados.itens.push({ 
                             codigo: codMat, 
                             descricao: dsMat, 
                             lote: loteMat, 
                             um: umMat, 
-                            qtd: qtdMatNum 
+                            qtd: qtdMat 
                         });
                     }
                 }
             }
-
-            // 3. VARREDURA E AGRUPAMENTO: SOMA AUTOMÁTICA DAS QUANTIDADES COM MESMO CÓDIGO E LOTE
-            let mapaConsolidado = {};
-            dados.itens.forEach(item => {
-                let chave = `${item.codigo.trim()}_${item.lote.trim()}`;
-                if (!mapaConsolidado[chave]) {
-                    mapaConsolidado[chave] = {
-                        codigo: item.codigo,
-                        descricao: item.descricao,
-                        lote: item.lote,
-                        um: item.um,
-                        qtd: 0
-                    };
-                }
-                mapaConsolidado[chave].qtd += item.qtd;
-            });
-
-            // Formata para o envio aceito pela planilha
-            dados.itens = Object.values(mapaConsolidado).map(it => {
-                return {
-                    codigo: it.codigo,
-                    descricao: it.descricao,
-                    lote: it.lote,
-                    um: it.um,
-                    qtd: String(it.qtd)
-                };
-            });
 
             if (dados.itens.length === 0) {
                 alert("Preencha ao menos uma quantidade válida antes de salvar!");
