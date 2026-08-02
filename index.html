@@ -242,7 +242,7 @@
     </div>
 
     <script>
-        // LINK ATUALIZADO PARA A PLANILHA DE TESTE DEPLOY
+        // LINK DA PLANILHA DE TESTES
         const urlPlanilha = "https://script.google.com/macros/s/AKfycbxeeCWAL2ZA1E2DQH1MnaR4hBggIxU_GISxtQPYjhND-_IdkdWLBNhryLyfZIR1kuCR/exec";
 
         let setorLogado = "";
@@ -487,7 +487,7 @@
             }
         }
 
-        // FUNÇÃO BIPE AJUSTADA PARA ACEITAR TANTO '}' QUANTO '|'
+        // BIPE COMPATÍVEL COM LEITOR ('}') E DIGITAÇÃO MANUAL ('|')
         function bipe(el, i, prefix) {
             let v = el.value.trim();
             const qtdField = document.getElementById(`${prefix}-qtd-${i}`);
@@ -500,8 +500,6 @@
             }
             
             processandoBipe = true;
-            
-            // PADRONIZAÇÃO: Converte '|' para '}' se for digitado manualmente
             let vPadronizado = v.replace('|', '}');
             let partes = vPadronizado.split('}');
             
@@ -509,10 +507,16 @@
                 document.getElementById(`${prefix}-mat-${i}`).value = partes[0].trim();
                 document.getElementById(`${prefix}-lote-${i}`).value = partes[1].trim();
                 
-                // Se foi leitor rápido ou digitação manual, garante o manuseio suave do foco
+                // Mantém a rotina original de limpeza automática do leitor
+                let limpador = setInterval(() => { if (qtdField) qtdField.value = ""; }, 10);
                 setTimeout(() => { 
+                    clearInterval(limpador); 
+                    if (qtdField) {
+                        qtdField.value = ""; 
+                        qtdField.focus(); 
+                    }
                     processandoBipe = false; 
-                }, 100);
+                }, 300);
             }
         }
 
@@ -682,13 +686,13 @@
             if (setorLogado !== "master") {
                 const limitePA = configSetores[setorLogado].linhasPA;
                 for (let i = 0; i < limitePA; i++) {
-                    let codMat = document.getElementById(`papi-mat-${i}`).value;
-                    let dsMat = document.getElementById(`papi-ds-${i}`).value;
-                    let loteMat = document.getElementById(`papi-lote-${i}`).value;
-                    let umMat = document.getElementById(`papi-um-${i}`).value;
-                    let qtdMat = document.getElementById(`papi-qtd-${i}`).value;
+                    let codMat = document.getElementById(`papi-mat-${i}`).value.trim();
+                    let dsMat = document.getElementById(`papi-ds-${i}`).value.trim();
+                    let loteMat = document.getElementById(`papi-lote-${i}`).value.trim();
+                    let umMat = document.getElementById(`papi-um-${i}`).value.trim();
+                    let qtdMat = parseFloat(document.getElementById(`papi-qtd-${i}`).value) || 0;
                     if (qtdMat > 0 && codMat) {
-                        dados.itens.push({ codigo: codMat, descricao: dsMat, lote: loteMat, um: umMat, qtd: parseFloat(qtdMat) });
+                        dados.itens.push({ codigo: codMat, descricao: dsMat, lote: loteMat, um: umMat, qtd: qtdMat });
                     }
                 }
                 
@@ -697,56 +701,72 @@
                 if (setorLogado === "dinamo") listaInsumos = insumosDinamoGeral;
                 
                 listaInsumos.forEach((it, i) => {
-                    let qtdIns = document.getElementById('ins-qtd-' + i).value;
+                    let qtdIns = parseFloat(document.getElementById('ins-qtd-' + i).value) || 0;
                     if (qtdIns > 0) {
-                        dados.itens.push({ codigo: it.id, descricao: it.ds, lote: "N/A", um: it.um, qtd: parseFloat(qtdIns) });
+                        dados.itens.push({ codigo: it.id, descricao: it.ds, lote: "N/A", um: it.um, qtd: qtdIns });
                     }
                 });
 
                 if (setorLogado === "decoracao") {
                     for (let i = 0; i < 7; i++) {
-                        let codMat = document.getElementById(`slvpapi-mat-${i}`).value;
-                        let dsMat = document.getElementById(`slvpapi-ds-${i}`).value;
-                        let loteMat = document.getElementById(`slvpapi-lote-${i}`).value;
-                        let umMat = document.getElementById(`slvpapi-um-${i}`).value;
-                        let qtdMat = document.getElementById(`slvpapi-qtd-${i}`).value;
+                        let codMat = document.getElementById(`slvpapi-mat-${i}`).value.trim();
+                        let dsMat = document.getElementById(`slvpapi-ds-${i}`).value.trim();
+                        let loteMat = document.getElementById(`slvpapi-lote-${i}`).value.trim();
+                        let umMat = document.getElementById(`slvpapi-um-${i}`).value.trim();
+                        let qtdMat = parseFloat(document.getElementById(`slvpapi-qtd-${i}`).value) || 0;
                         if (qtdMat > 0 && codMat) {
-                            dados.itens.push({ codigo: codMat, descricao: dsMat, lote: loteMat, um: umMat, qtd: parseFloat(qtdMat) });
+                            dados.itens.push({ codigo: codMat, descricao: dsMat, lote: loteMat, um: umMat, qtd: qtdMat });
                         }
                     }
                     insumosDecoracaoSleeve.forEach((it, i) => {
-                        let qtdIns = document.getElementById(`slvins-qtd-${i}`).value;
+                        let qtdIns = parseFloat(document.getElementById(`slvins-qtd-${i}`).value) || 0;
                         if (qtdIns > 0) {
-                            dados.itens.push({ codigo: it.id, descricao: it.ds, lote: "N/A", um: it.um, qtd: parseFloat(qtdIns) });
+                            dados.itens.push({ codigo: it.id, descricao: it.ds, lote: "N/A", um: it.um, qtd: qtdIns });
                         }
                     });
                 }
 
                 if (setorLogado === "dinamo") {
                     resinasDinamoFixas.forEach((it, i) => {
-                        let qtdRes = document.getElementById(`res-qtd-${i}`).value;
+                        let qtdRes = parseFloat(document.getElementById(`res-qtd-${i}`).value) || 0;
                         if (qtdRes > 0) {
-                            dados.itens.push({ codigo: it.id, descricao: it.ds, lote: "N/A", um: "KG", qtd: parseFloat(qtdRes) });
+                            dados.itens.push({ codigo: it.id, descricao: it.ds, lote: "N/A", um: "KG", qtd: qtdRes });
                         }
                     });
                 }
             }
 
+            // CAPTURA DO SETOR MASTER / DÍNAMO (COM REGRA DE SEPARAÇÃO GARANTIDA)
             if (setorLogado === "dinamo" || setorLogado === "master") {
                 const limiteMaster = configSetores[setorLogado].linhasPA;
                 for (let i = 0; i < limiteMaster; i++) {
-                    let codMat = document.getElementById(`mst-mat-${i}`).value;
-                    let dsMat = document.getElementById(`mst-ds-${i}`).value;
-                    let loteMat = document.getElementById(`mst-lote-${i}`).value;
-                    let umMat = document.getElementById(`mst-um-${i}`).value;
-                    let qtdMat = document.getElementById(`mst-qtd-${i}`).value;
+                    let lido = document.getElementById(`mst-lido-${i}`).value.trim();
+                    let codMat = document.getElementById(`mst-mat-${i}`).value.trim();
+                    let dsMat = document.getElementById(`mst-ds-${i}`).value.trim();
+                    let loteMat = document.getElementById(`mst-lote-${i}`).value.trim();
+                    let umMat = document.getElementById(`mst-um-${i}`).value.trim() || "KG";
+                    let qtdMat = parseFloat(document.getElementById(`mst-qtd-${i}`).value) || 0;
+
+                    // Se a pessoa digitou manualmente mas não disparou o evento do leitor
+                    if ((!codMat || !loteMat) && lido !== "") {
+                        let lidoPadrao = lido.replace('|', '}');
+                        let partes = lidoPadrao.split('}');
+                        if (partes.length >= 2) {
+                            codMat = partes[0].trim();
+                            loteMat = partes[1].trim();
+                        } else {
+                            codMat = lido;
+                            loteMat = "S/L";
+                        }
+                    }
+
                     if (qtdMat > 0 && codMat) {
-                        dados.itens.push({ codigo: codMat, descricao: dsMat, lote: loteMat, um: umMat, qtd: parseFloat(qtdMat) });
+                        dados.itens.push({ codigo: codMat, descricao: dsMat, lote: loteMat, um: umMat, qtd: qtdMat });
                     }
                 }
             }
 
-            // LÓGICA DE AGRUPAMENTO E SOMA AUTOMÁTICA
+            // VARREDURA RÁPIDA: SOMA OS LOTES IGUAIS ANTES DE ENVIAR
             let mapaConsolidado = {};
             dados.itens.forEach(item => {
                 let chave = `${item.codigo.trim()}_${item.lote.trim()}`;
@@ -763,6 +783,14 @@
             });
 
             dados.itens = Object.values(mapaConsolidado);
+
+            // Evita enviar dados vazios
+            if (dados.itens.length === 0) {
+                alert("Preencha ao menos uma quantidade válida!");
+                btnSalvar.innerText = "SALVAR INVENTÁRIO"; 
+                btnSalvar.disabled = false;
+                return;
+            }
 
             var xhr = new XMLHttpRequest();
             xhr.open("POST", urlPlanilha, true);
