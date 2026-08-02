@@ -242,7 +242,7 @@
     </div>
 
     <script>
-        // LINK DA PLANILHA DE TESTES
+        // LINK DA PLANILHA DE TESTE DEPLOY
         const urlPlanilha = "https://script.google.com/macros/s/AKfycbxeeCWAL2ZA1E2DQH1MnaR4hBggIxU_GISxtQPYjhND-_IdkdWLBNhryLyfZIR1kuCR/exec";
 
         let setorLogado = "";
@@ -490,7 +490,7 @@
             }
         }
 
-        // SEPARADOR DE CÓDIGO E LOTE (ACEITA '}' E '|')
+        // BIPE PADRÃO (ACEITA '}' E '|')
         function bipe(el, i, prefix) {
             let v = el.value.trim();
             const qtdField = document.getElementById(`${prefix}-qtd-${i}`);
@@ -626,7 +626,6 @@
             }
         }
 
-        // ENVIO DIRETO SEM NENHUMA REGRA DE SOMA (EXATAMENTE O PADRÃO ORIGINAL)
         function validarResponsavel() {
             const resp = document.getElementById('resp-name').value.trim();
             if (!resp) { document.getElementById('modalAvisoResp').style.display = 'block'; return; }
@@ -636,8 +635,38 @@
             
             let dados = { setor: configSetores[setorLogado].label, responsavel: resp, itens: [] };
             
-            // 1. DEMAIS SETORES
-            if (setorLogado !== "master") {
+            // CAPTURA EXCLUSIVA DO SETOR MASTER OU DÍNAMO
+            if (setorLogado === "dinamo" || setorLogado === "master") {
+                const limiteMaster = configSetores[setorLogado].linhasPA;
+                for (let i = 0; i < limiteMaster; i++) {
+                    let campoLido = document.getElementById(`mst-lido-${i}`);
+                    let campoQtd = document.getElementById(`mst-qtd-${i}`);
+
+                    if (campoLido && campoQtd) {
+                        let txtLido = campoLido.value.trim();
+                        let txtQtd = campoQtd.value.trim();
+
+                        if (txtLido !== "" && txtQtd !== "") {
+                            // Quebra do Código Lido (suporta '|' e '}')
+                            let textoLimpo = txtLido.replace('|', '}');
+                            let partes = textoLimpo.split('}');
+                            
+                            let cod = partes[0] ? partes[0].trim() : txtLido;
+                            let lot = partes[1] ? partes[1].trim() : "S/L";
+                            let dsMat = document.getElementById(`mst-ds-${i}`).value.trim();
+
+                            dados.itens.push({
+                                codigo: cod,
+                                descricao: dsMat,
+                                lote: lot,
+                                um: "KG",
+                                qtd: txtQtd
+                            });
+                        }
+                    }
+                }
+            } else {
+                // CAPTURA DOS DEMAIS SETORES ORIGINAIS
                 const limitePA = configSetores[setorLogado].linhasPA;
                 for (let i = 0; i < limitePA; i++) {
                     let codMat = document.getElementById(`papi-mat-${i}`).value.trim();
@@ -651,10 +680,7 @@
                     }
                 }
                 
-                let listaInsumos = insumosInjeSopro;
-                if (setorLogado === "decoracao") listaInsumos = insumosDecoracaoGeral;
-                if (setorLogado === "dinamo") listaInsumos = insumosDinamoGeral;
-                
+                let listaInsumos = (setorLogado === "decoracao") ? insumosDecoracaoGeral : ((setorLogado === "dinamo") ? insumosDinamoGeral : insumosInjeSopro);
                 listaInsumos.forEach((it, i) => {
                     let qtdIns = document.getElementById('ins-qtd-' + i).value.trim();
                     if (qtdIns !== "") {
@@ -691,44 +717,8 @@
                 }
             }
 
-            // 2. CAPTURA DO SETOR MASTER OU DÍNAMO
-            if (setorLogado === "dinamo" || setorLogado === "master") {
-                const limiteMaster = configSetores[setorLogado].linhasPA;
-                for (let i = 0; i < limiteMaster; i++) {
-                    let lido = document.getElementById(`mst-lido-${i}`).value.trim();
-                    let codMat = document.getElementById(`mst-mat-${i}`).value.trim();
-                    let dsMat = document.getElementById(`mst-ds-${i}`).value.trim();
-                    let loteMat = document.getElementById(`mst-lote-${i}`).value.trim();
-                    let umMat = document.getElementById(`mst-um-${i}`).value.trim() || "KG";
-                    let qtdMat = document.getElementById(`mst-qtd-${i}`).value.trim();
-
-                    // Se foi digitado manualmente e os campos ocultos não preencheram
-                    if ((!codMat || !loteMat) && lido !== "") {
-                        let lidoPadrao = lido.replace('|', '}');
-                        let partes = lidoPadrao.split('}');
-                        if (partes.length >= 2) {
-                            codMat = partes[0].trim();
-                            loteMat = partes[1].trim();
-                        } else {
-                            codMat = lido;
-                            loteMat = "S/L";
-                        }
-                    }
-
-                    if (qtdMat !== "" && codMat) {
-                        dados.itens.push({ 
-                            codigo: codMat, 
-                            descricao: dsMat, 
-                            lote: loteMat, 
-                            um: umMat, 
-                            qtd: qtdMat 
-                        });
-                    }
-                }
-            }
-
             if (dados.itens.length === 0) {
-                alert("Preencha ao menos uma quantidade válida antes de salvar!");
+                alert("Preencha ao menos uma linha válida antes de salvar!");
                 btnSalvar.innerText = "SALVAR INVENTÁRIO"; 
                 btnSalvar.disabled = false;
                 return;
