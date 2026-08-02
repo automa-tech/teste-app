@@ -243,594 +243,490 @@
 
     <script>
         // LINK DA PLANILHA DE TESTES
-        const urlPlanilha = "https://script.google.com/macros/s/AKfycbxeeCWAL2ZA1E2DQH1MnaR4hBggIxU_GISxtQPYjhND-_IdkdWLBNhryLyfZIR1kuCR/exec";
+const urlPlanilha = "https://script.google.com/macros/s/AKfycbxeeCWAL2ZA1E2DQH1MnaR4hBggIxU_GISxtQPYjhND-_IdkdWLBNhryLyfZIR1kuCR/exec";
 
-        let setorLogado = "";
-        let lAlvo = null; let tAlvo = null; let tabAlvo = null;
-        let processandoBipe = false;
-        let dadosGlobaisDash = [];
+let setorLogado = "";
+let lAlvo = null; let tAlvo = null; let tabAlvo = null;
+let processandoBipe = false;
+let dadosGlobaisDash = [];
 
-        const configSetores = {
-            "injesop": { pass: "sopro@1324", label: "INJEÇÃO E SOPRO", linhasPA: 25 },
-            "decoracao": { pass: "deco@1324", label: "DECORAÇÃO", linhasPA: 15 },
-            "dinamo": { pass: "dina@1324", label: "DÍNAMO", linhasPA: 10 },
-            "engprocessos": { pass: "eng@1324", label: "ENGENHARIA DE PROCESSOS" },
-            "master": { pass: "master@1324", label: "INVENTÁRIO DE MASTER", linhasPA: 50 }
-        };
+const configSetores = {
+    "injesop": { pass: "sopro@1324", label: "INJEÇÃO E SOPRO", linhasPA: 25 },
+    "decoracao": { pass: "deco@1324", label: "DECORAÇÃO", linhasPA: 15 },
+    "dinamo": { pass: "dina@1324", label: "DÍNAMO", linhasPA: 10 },
+    "engprocessos": { pass: "eng@1324", label: "ENGENHARIA DE PROCESSOS" },
+    "master": { pass: "master@1324", label: "INVENTÁRIO DE MASTER", linhasPA: 50 }
+};
 
-        const insumosInjeSopro = [
-            {id:'0040033', um:'RL', ds:'FITA ADESIVA DE PAPEL CREPADO 68X50', calc:'Fita'},
-            {id:'0040034', um:'KG', ds:'FITA DE PAPEL GOMADO 70MM S REFORCO'},
-            {id:'0040026', um:'UN', ds:'LAMINA COSM. 68 X 40 X 0,03 CM', calc:'Lamina Fina'},
-            {id:'0040023', um:'UN', ds:'LAMINA COSM. 41 X 59 X 0,13 CM', calc:'Lamina Grossa'},
-            {id:'0040055', um:'UN', ds:'LAMINA TNT GR15 68X40 10 G', calc:'Lamina TNT'},
-            {id:'0030069', um:'UN', ds:'CHAPA DE PAPELAO 1200 X 1000'},
-            {id:'0030057', um:'UN', ds:'CANTONEIRA 50 X 50 X 3 X 1050'},
-            {id:'0060037', um:'UN', ds:'CANTONEIRA 50 X 50 X 3 X1760'},
-            {id:'0030015', um:'UN', ds:'CAIXA PAPELAO TIPO 01 P/ COSM. 600 X 400 X 337'},
-            {id:'0040005', um:'UN', ds:'SACO TIPO 01 P/ CAIXA DE COSM.'},
-            {id:'0030038', um:'UN', ds:'CAIXA PAPELAO TIPO 03 P/ COSM. 600 X 400'},
-            {id:'0040025', um:'UN', ds:'SACO TIPO 03 P/ CAIXA COSM. 107 X 110 X 0,0'},
-            {id:'0030052', um:'UN', ds:'CAIXA PAPELAO TIPO 04 P/COSM. 600X400X337 SPILPACK'},
-            {id:'0030053', um:'UN', ds:'CAIXA PAPELAO TIPO 05 P/ COSM. 600 X 400 SPILPACK'},
-            {id:'0030066', um:'UN', ds:'CAIXA PAPELAO TIPO 06 P/ COSM. 572 X 372 X 390'},
-            {id:'0030084', um:'UN', ds:'CAIXA TIPO 07 KRAFT 592 X 392 X 240 SPILTAG'},
-            {id:'0030086', um:'UN', ds:'CAIXA TIPO 09 KRAFT 392 X 296 X 270 SPILTAG'},
-            {id:'0030101', um:'UN', ds:'CAIXA PAPELAO TIPO 14 P/COSM. 595 X 380 X 330'},
-            {id:'0060010', um:'UN', ds:'MANTA TERMICA 1 X 10 M'},
-            {id:'0070008', um:'UN', ds:'PALLET 1200 X 1000 FUMEGADO CE'},
-            {id:'0070015', um:'UN', ds:'PALLET PADRAO PBR 1200 X 1000 CE'}
-        ];
+const insumosInjeSopro = [
+    {id:'0040033', um:'RL', ds:'FITA ADESIVA DE PAPEL CREPADO 68X50', calc:'Fita'},
+    {id:'0040034', um:'KG', ds:'FITA DE PAPEL GOMADO 70MM S REFORCO'},
+    {id:'0040026', um:'UN', ds:'LAMINA COSM. 68 X 40 X 0,03 CM', calc:'Lamina Fina'},
+    {id:'0040023', um:'UN', ds:'LAMINA COSM. 41 X 59 X 0,13 CM', calc:'Lamina Grossa'},
+    {id:'0040055', um:'UN', ds:'LAMINA TNT GR15 68X40 10 G', calc:'Lamina TNT'},
+    {id:'0030069', um:'UN', ds:'CHAPA DE PAPELAO 1200 X 1000'},
+    {id:'0030057', um:'UN', ds:'CANTONEIRA 50 X 50 X 3 X 1050'},
+    {id:'0060037', um:'UN', ds:'CANTONEIRA 50 X 50 X 3 X1760'},
+    {id:'0030015', um:'UN', ds:'CAIXA PAPELAO TIPO 01 P/ COSM. 600 X 400 X 337'},
+    {id:'0040005', um:'UN', ds:'SACO TIPO 01 P/ CAIXA DE COSM.'},
+    {id:'0030038', um:'UN', ds:'CAIXA PAPELAO TIPO 03 P/ COSM. 600 X 400'},
+    {id:'0040025', um:'UN', ds:'SACO TIPO 03 P/ CAIXA COSM. 107 X 110 X 0,0'},
+    {id:'0030052', um:'UN', ds:'CAIXA PAPELAO TIPO 04 P/COSM. 600X400X337 SPILPACK'},
+    {id:'0030053', um:'UN', ds:'CAIXA PAPELAO TIPO 05 P/ COSM. 600 X 400 SPILPACK'},
+    {id:'0030066', um:'UN', ds:'CAIXA PAPELAO TIPO 06 P/ COSM. 572 X 372 X 390'},
+    {id:'0030084', um:'UN', ds:'CAIXA TIPO 07 KRAFT 592 X 392 X 240 SPILTAG'},
+    {id:'0030086', um:'UN', ds:'CAIXA TIPO 09 KRAFT 392 X 296 X 270 SPILTAG'},
+    {id:'0030101', um:'UN', ds:'CAIXA PAPELAO TIPO 14 P/COSM. 595 X 380 X 330'},
+    {id:'0060010', um:'UN', ds:'MANTA TERMICA 1 X 10 M'},
+    {id:'0070008', um:'UN', ds:'PALLET 1200 X 1000 FUMEGADO CE'},
+    {id:'0070015', um:'UN', ds:'PALLET PADRAO PBR 1200 X 1000 CE'}
+];
 
-        const insumosDecoracaoGeral = [
-            {id:'0040033', um:'RL', ds:'FITA ADESIVA DE PAPEL CREPADO 68X50', calc:'Fita'},
-            {id:'0030069', um:'UN', ds:'CHAPA DE PAPELAO 1200 X 1000'},
-            {id:'0030015', um:'UN', ds:'CAIXA PAPELAO TIPO 01 P/ COSM. 600 X 400 X 337'},
-            {id:'0040005', um:'UN', ds:'SACO TIPO 01 P/ CAIXA DE COSM.'},
-            {id:'0030038', um:'UN', ds:'CAIXA PAPELAO TIPO 03 P/ COSM. 600 X 400'},
-            {id:'0040025', um:'UN', ds:'SACO TIPO 03 P/ CAIXA COSM. 107 X 110 X 0,0'},
-            {id:'0030052', um:'UN', ds:'CAIXA PAPELAO TIPO 04 P/COSM. 600X400X337 SPILPACK'},
-            {id:'0030053', um:'UN', ds:'CAIXA PAPELAO TIPO 05 P/ COSM. 600 X 400 SPILPACK'},
-            {id:'0030066', um:'UN', ds:'CAIXA PAPELAO TIPO 06 P/ COSM. 572 X 372 X 390'},
-            {id:'0030084', um:'UN', ds:'CAIXA TIPO 07 KRAFT 592 X 392 X 240 SPILTAG'},
-            {id:'0030086', um:'UN', ds:'CAIXA TIPO 09 KRAFT 392 X 296 X 270 SPILTAG'},
-            {id:'0030101', um:'UN', ds:'CAIXA PAPELAO TIPO 14 P/COSM. 595 X 380 X 330'},
-            {id:'0060010', um:'UN', ds:'MANTA TERMICA 1 X 10 M'},
-            {id:'0070008', um:'UN', ds:'PALLET 1200 X 1000 FUMEGADO CE'},
-            {id:'0070015', um:'UN', ds:'PALLET PADRAO PBR 1200 X 1000 CE'}
-        ];
+const insumosDecoracaoGeral = [
+    {id:'0040033', um:'RL', ds:'FITA ADESIVA DE PAPEL CREPADO 68X50', calc:'Fita'},
+    {id:'0030069', um:'UN', ds:'CHAPA DE PAPELAO 1200 X 1000'},
+    {id:'0030015', um:'UN', ds:'CAIXA PAPELAO TIPO 01 P/ COSM. 600 X 400 X 337'},
+    {id:'0040005', um:'UN', ds:'SACO TIPO 01 P/ CAIXA DE COSM.'},
+    {id:'0030038', um:'UN', ds:'CAIXA PAPELAO TIPO 03 P/ COSM. 600 X 400'},
+    {id:'0040025', um:'UN', ds:'SACO TIPO 03 P/ CAIXA COSM. 107 X 110 X 0,0'},
+    {id:'0030052', um:'UN', ds:'CAIXA PAPELAO TIPO 04 P/COSM. 600X400X337 SPILPACK'},
+    {id:'0030053', um:'UN', ds:'CAIXA PAPELAO TIPO 05 P/ COSM. 600 X 400 SPILPACK'},
+    {id:'0030066', um:'UN', ds:'CAIXA PAPELAO TIPO 06 P/ COSM. 572 X 372 X 390'},
+    {id:'0030084', um:'UN', ds:'CAIXA TIPO 07 KRAFT 592 X 392 X 240 SPILTAG'},
+    {id:'0030086', um:'UN', ds:'CAIXA TIPO 09 KRAFT 392 X 296 X 270 SPILTAG'},
+    {id:'0030101', um:'UN', ds:'CAIXA PAPELAO TIPO 14 P/COSM. 595 X 380 X 330'},
+    {id:'0060010', um:'UN', ds:'MANTA TERMICA 1 X 10 M'},
+    {id:'0070008', um:'UN', ds:'PALLET 1200 X 1000 FUMEGADO CE'},
+    {id:'0070015', um:'UN', ds:'PALLET PADRAO PBR 1200 X 1000 CE'}
+];
 
-        const insumosDecoracaoSleeve = [
-            {id:'0040033', um:'RL', ds:'FITA ADESIVA DE PAPEL CREPADO 68X50', calc:'Fita'},
-            {id:'0040026', um:'UN', ds:'LAMINA COSM. 68 X 40 X 0,03 CM', calc:'Lamina Fina'},
-            {id:'0030069', um:'UN', ds:'CHAPA DE PAPELAO 1200 X 1000'}
-        ];
+const insumosDecoracaoSleeve = [
+    {id:'0040033', um:'RL', ds:'FITA ADESIVA DE PAPEL CREPADO 68X50', calc:'Fita'},
+    {id:'0040026', um:'UN', ds:'LAMINA COSM. 68 X 40 X 0,03 CM', calc:'Lamina Fina'},
+    {id:'0030069', um:'UN', ds:'CHAPA DE PAPELAO 1200 X 1000'}
+];
 
-        const insumosDinamoGeral = [
-            {id:'0040033', um:'RL', ds:'FITA ADESIVA DE PAPEL CREPADO 68X50', calc:'Fita'},
-            {id:'0040026', um:'UN', ds:'LAMINA COSM. 68 X 40 X 0,03 CM', calc:'Lamina Fina'},
-            {id:'0040023', um:'UN', ds:'LAMINA COSM. 41 X 59 X 0,13 CM', calc:'Lamina Grossa'},
-            {id:'0040055', um:'UN', ds:'LAMINA TNT GR15 68X40 10 G', calc:'Lamina TNT'},
-            {id:'0030069', um:'UN', ds:'CHAPA DE PAPELAO 1200 X 1000'},
-            {id:'0030057', um:'UN', ds:'CANTONEIRA 50 X 50 X 3 X 1050'},
-            {id:'0060037', um:'UN', ds:'CANTONEIRA 50 X 50 X 3 X1760'},
-            {id:'0030015', um:'UN', ds:'CAIXA PAPELAO TIPO 01 P/ COSM. 600 X 400 X 337'},
-            {id:'0040005', um:'UN', ds:'SACO TIPO 01 P/ CAIXA DE COSM.'},
-            {id:'0030038', um:'UN', ds:'CAIXA PAPELAO TIPO 03 P/ COSM. 600 X 400'},
-            {id:'0040025', um:'UN', ds:'SACO TIPO 03 P/ CAIXA COSM. 107 X 110 X 0,0'},
-            {id:'0030052', um:'UN', ds:'CAIXA PAPELAO TIPO 04 P/COSM. 600X400X337 SPILPACK'},
-            {id:'0030053', um:'UN', ds:'CAIXA PAPELAO TIPO 05 P/ COSM. 600 X 400 SPILPACK'},
-            {id:'0030066', um:'UN', ds:'CAIXA PAPELAO TIPO 06 P/ COSM. 572 X 372 X 390'},
-            {id:'0030084', um:'UN', ds:'CAIXA TIPO 07 KRAFT 592 X 392 X 240 SPILTAG'},
-            {id:'0030086', um:'UN', ds:'CAIXA TIPO 09 KRAFT 392 X 296 X 270 SPILTAG'},
-            {id:'0030101', um:'UN', ds:'CAIXA PAPELAO TIPO 14 P/COSM. 595 X 380 X 330'},
-            {id:'0060010', um:'UN', ds:'MANTA TERMICA 1 X 10 M'},
-            {id:'0070008', um:'UN', ds:'PALLET 1200 X 1000 FUMEGADO CE'},
-            {id:'0070015', um:'UN', ds:'PALLET PADRAO PBR 1200 X 1000 CE'},
-            {id:'0040076', um:'UN', ds:'DISCO POLEXAN R 87 MX25 87,00 X 1,50'},
-            {id:'0040077', um:'UN', ds:'DISCO DE POLEXAN P/ TAMPA R 63'}
-        ];
+const insumosDinamoGeral = [
+    {id:'0040033', um:'RL', ds:'FITA ADESIVA DE PAPEL CREPADO 68X50', calc:'Fita'},
+    {id:'0040026', um:'UN', ds:'LAMINA COSM. 68 X 40 X 0,03 CM', calc:'Lamina Fina'},
+    {id:'0040023', um:'UN', ds:'LAMINA COSM. 41 X 59 X 0,13 CM', calc:'Lamina Grossa'},
+    {id:'0040055', um:'UN', ds:'LAMINA TNT GR15 68X40 10 G', calc:'Lamina TNT'},
+    {id:'0030069', um:'UN', ds:'CHAPA DE PAPELAO 1200 X 1000'},
+    {id:'0030057', um:'UN', ds:'CANTONEIRA 50 X 50 X 3 X 1050'},
+    {id:'0060037', um:'UN', ds:'CANTONEIRA 50 X 50 X 3 X1760'},
+    {id:'0030015', um:'UN', ds:'CAIXA PAPELAO TIPO 01 P/ COSM. 600 X 400 X 337'},
+    {id:'0040005', um:'UN', ds:'SACO TIPO 01 P/ CAIXA DE COSM.'},
+    {id:'0030038', um:'UN', ds:'CAIXA PAPELAO TIPO 03 P/ COSM. 600 X 400'},
+    {id:'0040025', um:'UN', ds:'SACO TIPO 03 P/ CAIXA COSM. 107 X 110 X 0,0'},
+    {id:'0030052', um:'UN', ds:'CAIXA PAPELAO TIPO 04 P/COSM. 600X400X337 SPILPACK'},
+    {id:'0030053', um:'UN', ds:'CAIXA PAPELAO TIPO 05 P/ COSM. 600 X 400 SPILPACK'},
+    {id:'0030066', um:'UN', ds:'CAIXA PAPELAO TIPO 06 P/ COSM. 572 X 372 X 390'},
+    {id:'0030084', um:'UN', ds:'CAIXA TIPO 07 KRAFT 592 X 392 X 240 SPILTAG'},
+    {id:'0030086', um:'UN', ds:'CAIXA TIPO 09 KRAFT 392 X 296 X 270 SPILTAG'},
+    {id:'0030101', um:'UN', ds:'CAIXA PAPELAO TIPO 14 P/COSM. 595 X 380 X 330'},
+    {id:'0060010', um:'UN', ds:'MANTA TERMICA 1 X 10 M'},
+    {id:'0070008', um:'UN', ds:'PALLET 1200 X 1000 FUMEGADO CE'},
+    {id:'0070015', um:'UN', ds:'PALLET PADRAO PBR 1200 X 1000 CE'},
+    {id:'0040076', um:'UN', ds:'DISCO POLEXAN R 87 MX25 87,00 X 1,50'},
+    {id:'0040077', um:'UN', ds:'DISCO DE POLEXAN P/ TAMPA R 63'}
+];
 
-        const resinasDinamoFixas = [
-            {id:'0010035', ds:'RESINA POLIPROPILENO PP CP 241'},
-            {id:'0010036', ds:'RESINA POLIPROPILENO PP FT 120'},
-            {id:'0010039', ds:'RESINA POLIPROPILENO PP RANDON RP 340R'},
-            {id:'0010042', ds:'RESINA POLIPROPILENO PP RT 100'},
-            {id:'0010043', ds:'RESINA PELBD IC32'},
-            {id:'0010073', ds:'RESINA TPE 7101/A80CO'},
-            {id:'0014256', ds:'RESINA PEAD GF 4950'}
-        ];
+const resinasDinamoFixas = [
+    {id:'0010035', ds:'RESINA POLIPROPILENO PP CP 241'},
+    {id:'0010036', ds:'RESINA POLIPROPILENO PP FT 120'},
+    {id:'0010039', ds:'RESINA POLIPROPILENO PP RANDON RP 340R'},
+    {id:'0010042', ds:'RESINA POLIPROPILENO PP RT 100'},
+    {id:'0010043', ds:'RESINA PELBD IC32'},
+    {id:'0010073', ds:'RESINA TPE 7101/A80CO'},
+    {id:'0014256', ds:'RESINA PEAD GF 4950'}
+];
 
-        function autenticar() { 
-            const u = document.getElementById('user').value.trim(); 
-            const p = document.getElementById('pass').value.trim(); 
-            if (configSetores[u] && configSetores[u].pass === p) { 
-                setorLogado = u;
-                document.getElementById('login-screen').style.display = 'none'; 
-                document.getElementById('app-container').style.display = 'block'; 
-                document.getElementById('label-setor').innerText = "PAINEL DE INVENTÁRIO - " + configSetores[u].label;
-                
-                if (u === "engprocessos") {
-                    document.getElementById('operator-panel').style.display = 'none';
-                    document.getElementById('linha-responsavel').style.display = 'none';
-                    document.getElementById('btn-salvar').style.display = 'none';
-                    document.getElementById('engineering-panel').style.display = 'block';
-                    carregarDadosDash();
-                } else {
-                    document.getElementById('operator-panel').style.display = 'block';
-                    document.getElementById('linha-responsavel').style.display = 'table-row';
-                    document.getElementById('btn-salvar').style.display = 'block';
-                    document.getElementById('engineering-panel').style.display = 'none';
-                    gerarEstrutura(); 
-                }
-            } else { document.getElementById('error-msg').style.display = 'block'; } 
+function autenticar() { 
+    const u = document.getElementById('user').value.trim(); 
+    const p = document.getElementById('pass').value.trim(); 
+    if (configSetores[u] && configSetores[u].pass === p) { 
+        setorLogado = u;
+        document.getElementById('login-screen').style.display = 'none'; 
+        document.getElementById('app-container').style.display = 'block'; 
+        document.getElementById('label-setor').innerText = "PAINEL DE INVENTÁRIO - " + configSetores[u].label;
+        
+        if (u === "engprocessos") {
+            document.getElementById('operator-panel').style.display = 'none';
+            document.getElementById('linha-responsavel').style.display = 'none';
+            document.getElementById('btn-salvar').style.display = 'none';
+            document.getElementById('engineering-panel').style.display = 'block';
+            carregarDadosDash();
+        } else {
+            document.getElementById('operator-panel').style.display = 'block';
+            document.getElementById('linha-responsavel').style.display = 'table-row';
+            document.getElementById('btn-salvar').style.display = 'block';
+            document.getElementById('engineering-panel').style.display = 'none';
+            gerarEstrutura(); 
+        }
+    } else { document.getElementById('error-msg').style.display = 'block'; } 
+}
+
+function gerarEstrutura() {
+    if (setorLogado === "master") {
+        document.getElementById('bloco-papi-geral').style.display = 'none';
+        document.getElementById('bloco-insumos-geral').style.display = 'none';
+    } else {
+        document.getElementById('bloco-papi-geral').style.display = 'block';
+        document.getElementById('bloco-insumos-geral').style.display = 'block';
+    }
+
+    const limitePA = configSetores[setorLogado].linhasPA;
+    
+    if (setorLogado !== "master") {
+        const cp = document.getElementById('corpo-papi'); cp.innerHTML = "";
+        for (let i = 0; i < limitePA; i++) { 
+            let tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><input class="cell-input" id="papi-lido-${i}" oninput="bipe(this, ${i}, 'papi')"></td>
+                <td><input class="cell-input cell-readonly text-center" id="papi-mat-${i}" readonly tabindex="-1"></td>
+                <td><input class="cell-input cell-readonly text-center" id="papi-ds-${i}" value="**********************" readonly tabindex="-1"></td>
+                <td><input class="cell-input cell-readonly text-center" id="papi-lote-${i}" readonly tabindex="-1"></td>
+                <td><input class="cell-input cell-readonly text-center" id="papi-um-${i}" value="CX" readonly tabindex="-1"></td>
+                <td><input class="cell-input" type="number" id="papi-qtd-${i}" onkeydown="handleEnter(event, 'papi', ${i})"></td>
+            `;
+            cp.appendChild(tr);
+        }
+        
+        const ci = document.getElementById('corpo-insumos'); ci.innerHTML = "";
+        let listaInsumos = insumosInjeSopro;
+        if (setorLogado === "decoracao") listaInsumos = insumosDecoracaoGeral;
+        if (setorLogado === "dinamo") listaInsumos = insumosDinamoGeral;
+        
+        listaInsumos.forEach((it, i) => { 
+            let tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><input class="cell-input cell-readonly text-center" value="**********" readonly tabindex="-1"></td>
+                <td><input class="cell-input cell-readonly text-center" id="ins-mat-${i}" value="${it.id}" readonly tabindex="-1"></td>
+                <td><input class="cell-input cell-readonly text-center" id="ins-ds-${i}" value="${it.ds}" readonly tabindex="-1"></td>
+                <td><input class="cell-input cell-readonly text-center" id="ins-lote-${i}" value="******" readonly tabindex="-1"></td>
+                <td><input class="cell-input cell-readonly text-center" id="ins-um-${i}" value="${it.um}" readonly tabindex="-1"></td>
+                <td>
+                    <input class="cell-input" type="number" id="ins-qtd-${i}" placeholder="${it.calc ? 'calculadora...' : ''}" onkeydown="handleEnter(event, 'ins', ${i})">
+                    ${it.calc ? `<button class="btn-calc" onclick="abrirCalc(${i},'${it.calc}','ins')">🧮</button>` : ''}
+                </td>
+            `;
+            ci.appendChild(tr);
+        });
+    }
+
+    document.getElementById('bloco-papi-sleeve').style.display = (setorLogado === "decoracao") ? 'block' : 'none';
+    document.getElementById('bloco-insumos-sleeve').style.display = (setorLogado === "decoracao") ? 'block' : 'none';
+    document.getElementById('bloco-resinas-dinamo').style.display = (setorLogado === "dinamo") ? 'block' : 'none';
+    document.getElementById('bloco-master-dinamo').style.display = (setorLogado === "dinamo" || setorLogado === "master") ? 'block' : 'none';
+
+    if (setorLogado === "decoracao") {
+        const cps = document.getElementById('corpo-papi-sleeve'); cps.innerHTML = "";
+        for (let i = 0; i < 7; i++) {
+            let tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><input class="cell-input" id="slvpapi-lido-${i}" oninput="bipe(this, ${i}, 'slvpapi')"></td>
+                <td><input class="cell-input cell-readonly text-center" id="slvpapi-mat-${i}" readonly tabindex="-1"></td>
+                <td><input class="cell-input cell-readonly text-center" id="slvpapi-ds-${i}" value="**********************" readonly tabindex="-1"></td>
+                <td><input class="cell-input cell-readonly text-center" id="slvpapi-lote-${i}" readonly tabindex="-1"></td>
+                <td><input class="cell-input cell-readonly text-center" id="slvpapi-um-${i}" value="CX" readonly tabindex="-1"></td>
+                <td><input class="cell-input" type="number" id="slvpapi-qtd-${i}" onkeydown="handleEnter(event, 'slvpapi', ${i})"></td>
+            `;
+            cps.appendChild(tr);
         }
 
-        function gerarEstrutura() {
-            if (setorLogado === "master") {
-                document.getElementById('bloco-papi-geral').style.display = 'none';
-                document.getElementById('bloco-insumos-geral').style.display = 'none';
+        const cis = document.getElementById('corpo-insumos-sleeve'); cis.innerHTML = "";
+        insumosDecoracaoSleeve.forEach((it, i) => {
+            let tr = document.createElement('tr');
+            let temCalculadora = it.calc ? true : false;
+            tr.innerHTML = `
+                <td><input class="cell-input cell-readonly text-center" value="**********" readonly tabindex="-1"></td>
+                <td><input class="cell-input cell-readonly text-center" id="slvins-mat-${i}" value="${it.id}" readonly tabindex="-1"></td>
+                <td><input class="cell-input cell-readonly text-center" id="slvins-ds-${i}" value="${it.ds}" readonly tabindex="-1"></td>
+                <td><input class="cell-input cell-readonly text-center" id="slvins-lote-${i}" value="******" readonly tabindex="-1"></td>
+                <td><input class="cell-input cell-readonly text-center" id="slvins-um-${i}" value="${it.um}" readonly tabindex="-1"></td>
+                <td>
+                    <input class="cell-input" type="number" id="slvins-qtd-${i}" placeholder="${temCalculadora ? 'calculadora...' : ''}" onkeydown="handleEnter(event, 'slvins', ${i})">
+                    ${temCalculadora ? `<button class="btn-calc" onclick="abrirCalc(${i},'${it.calc}','slvins')">🧮</button>` : ''}
+                </td>
+            `;
+            cis.appendChild(tr);
+        });
+    }
+
+    if (setorLogado === "dinamo") {
+        const cr = document.getElementById('corpo-resinas-dinamo'); cr.innerHTML = "";
+        resinasDinamoFixas.forEach((it, i) => {
+            let tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><input class="cell-input cell-readonly text-center" value="**********" readonly tabindex="-1"></td>
+                <td><input class="cell-input cell-readonly text-center" id="res-mat-${i}" value="${it.id}" readonly tabindex="-1"></td>
+                <td><input class="cell-input cell-readonly text-center" id="res-ds-${i}" value="${it.ds}" readonly tabindex="-1"></td>
+                <td><input class="cell-input cell-readonly text-center" id="res-lote-${i}" value="******" readonly tabindex="-1"></td>
+                <td><input class="cell-input cell-readonly text-center" id="res-um-${i}" value="KG" readonly tabindex="-1"></td>
+                <td><input class="cell-input" type="number" id="res-qtd-${i}" onkeydown="handleEnter(event, 'res', ${i})"></td>
+            `;
+            cr.appendChild(tr);
+        });
+    }
+
+    if (setorLogado === "dinamo" || setorLogado === "master") {
+        const cm = document.getElementById('corpo-master-dinamo'); cm.innerHTML = "";
+        const limiteMaster = configSetores[setorLogado].linhasPA;
+        for (let i = 0; i < limiteMaster; i++) {
+            let tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><input class="cell-input" id="mst-lido-${i}" oninput="bipe(this, ${i}, 'mst')"></td>
+                <td><input class="cell-input cell-readonly text-center" id="mst-mat-${i}" readonly tabindex="-1"></td>
+                <td><input class="cell-input cell-readonly text-center" id="mst-ds-${i}" value="**********************" readonly tabindex="-1"></td>
+                <td><input class="cell-input cell-readonly text-center" id="mst-lote-${i}" readonly tabindex="-1"></td>
+                <td><input class="cell-input cell-readonly text-center" id="mst-um-${i}" value="KG" readonly tabindex="-1"></td>
+                <td><input class="cell-input" type="number" id="mst-qtd-${i}" onkeydown="handleEnter(event, 'mst', ${i})"></td>
+            `;
+            cm.appendChild(tr);
+        }
+    }
+}
+
+function bipe(el, i, prefix) {
+    let v = el.value.trim();
+    const qtdField = document.getElementById(`${prefix}-qtd-${i}`);
+    if (v === "") {
+        document.getElementById(`${prefix}-mat-${i}`).value = "";
+        document.getElementById(`${prefix}-lote-${i}`).value = "";
+        if (qtdField) qtdField.value = ""; 
+        return;
+    }
+    processandoBipe = true;
+    let vPadronizado = v.replace('|', '}');
+    let partes = vPadronizado.split('}');
+    if (partes.length >= 2) {
+        document.getElementById(`${prefix}-mat-${i}`).value = partes[0].trim();
+        document.getElementById(`${prefix}-lote-${i}`).value = partes[1].trim();
+        
+        let limpador = setInterval(() => { if (qtdField) qtdField.value = ""; }, 10);
+        setTimeout(() => { 
+            clearInterval(limpador); 
+            if (qtdField) {
+                qtdField.value = ""; 
+                qtdField.focus(); 
+            }
+            processandoBipe = false; 
+        }, 300);
+    }
+}
+
+function handleEnter(e, prefix, i) { 
+    if (processandoBipe && e.key === 'Enter') { e.preventDefault(); return; }
+    if (e.key === 'Enter') { 
+        e.preventDefault(); 
+        if (prefix === 'mst') {
+            let nextMstLido = document.getElementById(`mst-lido-${i + 1}`);
+            if (nextMstLido) nextMstLido.focus();
+        }
+    } 
+}
+
+function abrirCalc(i, t, tab) { lAlvo=i; tAlvo=t; tabAlvo=tab; document.getElementById('p-t').value = ""; document.getElementById('q-m').value = ""; document.getElementById('modalCalc').style.display='block'; document.getElementById('q-m').style.display = t==='Fita'?'block':'none'; }
+function fecharModais() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
+function tentarSair() { document.getElementById('modalSairPerg').style.display = 'block'; }
+function logoutDireto() { location.reload(); }
+
+function aplicarCalculo() { 
+    const p = parseFloat(document.getElementById('p-t').value) || 0; 
+    const m = parseFloat(document.getElementById('q-m').value) || 0; 
+    let res = 0; 
+    if(tAlvo === 'Fita') { 
+        res = (((p - (m * 30)) * 50) / 270) / 50; 
+        document.getElementById(`${tabAlvo}-qtd-${lAlvo}`).value = res.toFixed(1); 
+    } else { 
+        let divisor = 1;
+        if (tAlvo === 'Lamina Fina') divisor = 8;
+        else if (tAlvo === 'Lamina Grossa') divisor = 28;
+        else if (tAlvo === 'Lamina TNT') divisor = 4;
+        res = Math.ceil(p / divisor); 
+        document.getElementById(`${tabAlvo}-qtd-${lAlvo}`).value = res; 
+    } 
+    fecharModais(); 
+    document.getElementById(`${tabAlvo}-qtd-${lAlvo}`).focus();
+}
+
+function carregarDadosDash() {
+    const tbody = document.getElementById('corpo-dash');
+    tbody.innerHTML = `<tr><td colspan="8" style="padding:20px; color:#666;">Buscando dados atualizados no Google Sheets...</td></tr>`;
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", urlPlanilha, true);
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200 || xhr.status === 0) {
+                try {
+                    dadosGlobaisDash = JSON.parse(xhr.responseText);
+                    renderizarTabelaDash();
+                } catch (e) {
+                    tbody.innerHTML = `<tr><td colspan="8" style="padding:20px; color:red;">Erro ao processar dados da planilha!</td></tr>`;
+                }
             } else {
-                document.getElementById('bloco-papi-geral').style.display = 'block';
-                document.getElementById('bloco-insumos-geral').style.display = 'block';
+                tbody.innerHTML = `<tr><td colspan="8" style="padding:20px; color:red;">Erro de comunicação com a planilha!</td></tr>`;
+            }
+        }
+    };
+    xhr.send();
+}
+
+function renderizarTabelaDash() {
+    const fSetor = document.getElementById('filtro-setor').value.toUpperCase().trim();
+    const fBusca = document.getElementById('busca-dash').value.toLowerCase().trim();
+    const tbody = document.getElementById('corpo-dash');
+    tbody.innerHTML = "";
+
+    let totalItens = 0;
+    let linesFiltradas = 0;
+
+    dadosGlobaisDash.forEach(row => {
+        let dataFormata = new Date(row[0]).toLocaleString();
+        let setor = (row[1] || "").toUpperCase().trim();
+        let resp = (row[2] || "").toLowerCase().trim();
+        let codigo = (row[3] || "").toString().toLowerCase().trim();
+        let desc = (row[4] || "").toLowerCase().trim();
+        let lote = row[5] || "";
+        let um = row[6] || "";
+        let qtd = parseFloat(row[7]) || 0;
+
+        let bateSetor = (fSetor === "TODOS" || setor === fSetor);
+        let bateBusca = (fBusca === "" || resp.includes(fBusca) || codigo.includes(fBusca) || desc.includes(fBusca));
+
+        if (bateSetor && bateBusca) {
+            linesFiltradas++;
+            totalItens += qtd;
+
+            tbody.innerHTML += `
+                <tr>
+                    <td style="padding:6px;">${dataFormata}</td>
+                    <td>${row[1] || ""}</td>
+                    <td>${row[2] || ""}</td>
+                    <td>${row[3] || ""}</td>
+                    <td>${row[4] || ""}</td>
+                    <td>${lote}</td>
+                    <td>${um}</td>
+                    <td>${qtd}</td>
+                </tr>
+            `;
+        }
+    });
+
+    document.getElementById('dash-ops').innerText = linesFiltradas;
+    document.getElementById('dash-itens').innerText = totalItens.toLocaleString();
+
+    if (linesFiltradas === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="padding:20px; color:#999;">Nenhum registro encontrado para o filtro selecionado.</td></tr>`;
+    }
+}
+
+// FUNÇÃO VALIDAR RESPONSÁVEL COM SUPORTE GARANTIDO A TEXTO / STRINGS
+function validarResponsavel() {
+    const resp = document.getElementById('resp-name').value.trim();
+    if (!resp) { document.getElementById('modalAvisoResp').style.display = 'block'; return; }
+
+    const btnSalvar = document.getElementById('btn-salvar');
+    btnSalvar.innerText = "ENVIANDO... AGUARDE"; btnSalvar.disabled = true;
+    
+    let dados = { setor: configSetores[setorLogado].label, responsavel: resp, itens: [] };
+    
+    // COLETA DOS DADOS
+    if (setorLogado === "dinamo" || setorLogado === "master") {
+        const limiteMaster = configSetores[setorLogado].linhasPA;
+        for (let i = 0; i < limiteMaster; i++) {
+            let lido = document.getElementById(`mst-lido-${i}`).value.trim();
+            let codMat = document.getElementById(`mst-mat-${i}`).value.trim();
+            let dsMat = document.getElementById(`mst-ds-${i}`).value.trim();
+            let loteMat = document.getElementById(`mst-lote-${i}`).value.trim();
+            let umMat = document.getElementById(`mst-um-${i}`).value.trim() || "KG";
+            let qtdMatStr = document.getElementById(`mst-qtd-${i}`).value.trim();
+            let qtdMatNum = parseFloat(qtdMatStr) || 0;
+
+            // Se digitou manualmente sem usar leitor de código de barras
+            if ((!codMat || !loteMat) && lido !== "") {
+                let lidoPadrao = lido.replace('|', '}');
+                let partes = lidoPadrao.split('}');
+                if (partes.length >= 2) {
+                    codMat = partes[0].trim();
+                    loteMat = partes[1].trim();
+                } else {
+                    codMat = lido;
+                    loteMat = "S/L";
+                }
             }
 
-            const limitePA = configSetores[setorLogado].linhasPA;
-            
-            if (setorLogado !== "master") {
-                const cp = document.getElementById('corpo-papi'); cp.innerHTML = "";
-                for (let i = 0; i < limitePA; i++) { 
-                    let tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td><input class="cell-input" id="papi-lido-${i}" oninput="bipe(this, ${i}, 'papi')"></td>
-                        <td><input class="cell-input cell-readonly text-center" id="papi-mat-${i}" readonly tabindex="-1"></td>
-                        <td><input class="cell-input cell-readonly text-center" id="papi-ds-${i}" value="**********************" readonly tabindex="-1"></td>
-                        <td><input class="cell-input cell-readonly text-center" id="papi-lote-${i}" readonly tabindex="-1"></td>
-                        <td><input class="cell-input cell-readonly text-center" id="papi-um-${i}" value="CX" readonly tabindex="-1"></td>
-                        <td><input class="cell-input" type="number" id="papi-qtd-${i}" onkeydown="handleEnter(event, 'papi', ${i})"></td>
-                    `;
-                    cp.appendChild(tr);
-                }
-                
-                const ci = document.getElementById('corpo-insumos'); ci.innerHTML = "";
-                let listaInsumos = insumosInjeSopro;
-                if (setorLogado === "decoracao") listaInsumos = insumosDecoracaoGeral;
-                if (setorLogado === "dinamo") listaInsumos = insumosDinamoGeral;
-                
-                listaInsumos.forEach((it, i) => { 
-                    let tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td><input class="cell-input cell-readonly text-center" value="**********" readonly tabindex="-1"></td>
-                        <td><input class="cell-input cell-readonly text-center" id="ins-mat-${i}" value="${it.id}" readonly tabindex="-1"></td>
-                        <td><input class="cell-input cell-readonly text-center" id="ins-ds-${i}" value="${it.ds}" readonly tabindex="-1"></td>
-                        <td><input class="cell-input cell-readonly text-center" id="ins-lote-${i}" value="******" readonly tabindex="-1"></td>
-                        <td><input class="cell-input cell-readonly text-center" id="ins-um-${i}" value="${it.um}" readonly tabindex="-1"></td>
-                        <td>
-                            <input class="cell-input" type="number" id="ins-qtd-${i}" placeholder="${it.calc ? 'calculadora...' : ''}" onkeydown="handleEnter(event, 'ins', ${i})">
-                            ${it.calc ? `<button class="btn-calc" onclick="abrirCalc(${i},'${it.calc}','ins')">🧮</button>` : ''}
-                        </td>
-                    `;
-                    ci.appendChild(tr);
+            if (qtdMatNum > 0 && codMat) {
+                dados.itens.push({ 
+                    codigo: codMat, 
+                    descricao: dsMat, 
+                    lote: loteMat, 
+                    um: umMat, 
+                    qtd: qtdMatNum 
                 });
             }
-
-            document.getElementById('bloco-papi-sleeve').style.display = (setorLogado === "decoracao") ? 'block' : 'none';
-            document.getElementById('bloco-insumos-sleeve').style.display = (setorLogado === "decoracao") ? 'block' : 'none';
-            document.getElementById('bloco-resinas-dinamo').style.display = (setorLogado === "dinamo") ? 'block' : 'none';
-            document.getElementById('bloco-master-dinamo').style.display = (setorLogado === "dinamo" || setorLogado === "master") ? 'block' : 'none';
-
-            if (setorLogado === "decoracao") {
-                const cps = document.getElementById('corpo-papi-sleeve'); cps.innerHTML = "";
-                for (let i = 0; i < 7; i++) {
-                    let tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td><input class="cell-input" id="slvpapi-lido-${i}" oninput="bipe(this, ${i}, 'slvpapi')"></td>
-                        <td><input class="cell-input cell-readonly text-center" id="slvpapi-mat-${i}" readonly tabindex="-1"></td>
-                        <td><input class="cell-input cell-readonly text-center" id="slvpapi-ds-${i}" value="**********************" readonly tabindex="-1"></td>
-                        <td><input class="cell-input cell-readonly text-center" id="slvpapi-lote-${i}" readonly tabindex="-1"></td>
-                        <td><input class="cell-input cell-readonly text-center" id="slvpapi-um-${i}" value="CX" readonly tabindex="-1"></td>
-                        <td><input class="cell-input" type="number" id="slvpapi-qtd-${i}" onkeydown="handleEnter(event, 'slvpapi', ${i})"></td>
-                    `;
-                    cps.appendChild(tr);
-                }
-
-                const cis = document.getElementById('corpo-insumos-sleeve'); cis.innerHTML = "";
-                insumosDecoracaoSleeve.forEach((it, i) => {
-                    let tr = document.createElement('tr');
-                    let temCalculadora = it.calc ? true : false;
-                    tr.innerHTML = `
-                        <td><input class="cell-input cell-readonly text-center" value="**********" readonly tabindex="-1"></td>
-                        <td><input class="cell-input cell-readonly text-center" id="slvins-mat-${i}" value="${it.id}" readonly tabindex="-1"></td>
-                        <td><input class="cell-input cell-readonly text-center" id="slvins-ds-${i}" value="${it.ds}" readonly tabindex="-1"></td>
-                        <td><input class="cell-input cell-readonly text-center" id="slvins-lote-${i}" value="******" readonly tabindex="-1"></td>
-                        <td><input class="cell-input cell-readonly text-center" id="slvins-um-${i}" value="${it.um}" readonly tabindex="-1"></td>
-                        <td>
-                            <input class="cell-input" type="number" id="slvins-qtd-${i}" placeholder="${temCalculadora ? 'calculadora...' : ''}" onkeydown="handleEnter(event, 'slvins', ${i})">
-                            ${temCalculadora ? `<button class="btn-calc" onclick="abrirCalc(${i},'${it.calc}','slvins')">🧮</button>` : ''}
-                        </td>
-                    `;
-                    cis.appendChild(tr);
-                });
-            }
-
-            if (setorLogado === "dinamo") {
-                const cr = document.getElementById('corpo-resinas-dinamo'); cr.innerHTML = "";
-                resinasDinamoFixas.forEach((it, i) => {
-                    let tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td><input class="cell-input cell-readonly text-center" value="**********" readonly tabindex="-1"></td>
-                        <td><input class="cell-input cell-readonly text-center" id="res-mat-${i}" value="${it.id}" readonly tabindex="-1"></td>
-                        <td><input class="cell-input cell-readonly text-center" id="res-ds-${i}" value="${it.ds}" readonly tabindex="-1"></td>
-                        <td><input class="cell-input cell-readonly text-center" id="res-lote-${i}" value="******" readonly tabindex="-1"></td>
-                        <td><input class="cell-input cell-readonly text-center" id="res-um-${i}" value="KG" readonly tabindex="-1"></td>
-                        <td><input class="cell-input" type="number" id="res-qtd-${i}" onkeydown="handleEnter(event, 'res', ${i})"></td>
-                    `;
-                    cr.appendChild(tr);
-                });
-            }
-
-            if (setorLogado === "dinamo" || setorLogado === "master") {
-                const cm = document.getElementById('corpo-master-dinamo'); cm.innerHTML = "";
-                const limiteMaster = configSetores[setorLogado].linhasPA;
-                for (let i = 0; i < limiteMaster; i++) {
-                    let tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td><input class="cell-input" id="mst-lido-${i}" oninput="bipe(this, ${i}, 'mst')"></td>
-                        <td><input class="cell-input cell-readonly text-center" id="mst-mat-${i}" readonly tabindex="-1"></td>
-                        <td><input class="cell-input cell-readonly text-center" id="mst-ds-${i}" value="**********************" readonly tabindex="-1"></td>
-                        <td><input class="cell-input cell-readonly text-center" id="mst-lote-${i}" readonly tabindex="-1"></td>
-                        <td><input class="cell-input cell-readonly text-center" id="mst-um-${i}" value="KG" readonly tabindex="-1"></td>
-                        <td><input class="cell-input" type="number" id="mst-qtd-${i}" onkeydown="handleEnter(event, 'mst', ${i})"></td>
-                    `;
-                    cm.appendChild(tr);
-                }
-            }
         }
+    }
 
-        // BIPE COMPATÍVEL COM LEITOR ('}') E DIGITAÇÃO MANUAL ('|')
-        function bipe(el, i, prefix) {
-            let v = el.value.trim();
-            const qtdField = document.getElementById(`${prefix}-qtd-${i}`);
-            
-            if (v === "") {
-                document.getElementById(`${prefix}-mat-${i}`).value = "";
-                document.getElementById(`${prefix}-lote-${i}`).value = "";
-                if (qtdField) qtdField.value = ""; 
-                return;
-            }
-            
-            processandoBipe = true;
-            let vPadronizado = v.replace('|', '}');
-            let partes = vPadronizado.split('}');
-            
-            if (partes.length >= 2) {
-                document.getElementById(`${prefix}-mat-${i}`).value = partes[0].trim();
-                document.getElementById(`${prefix}-lote-${i}`).value = partes[1].trim();
-                
-                // Mantém a rotina original de limpeza automática do leitor
-                let limpador = setInterval(() => { if (qtdField) qtdField.value = ""; }, 10);
-                setTimeout(() => { 
-                    clearInterval(limpador); 
-                    if (qtdField) {
-                        qtdField.value = ""; 
-                        qtdField.focus(); 
-                    }
-                    processandoBipe = false; 
-                }, 300);
-            }
-        }
-
-        function handleEnter(e, prefix, i) { 
-            if (processandoBipe && e.key === 'Enter') { e.preventDefault(); return; }
-            if (e.key === 'Enter') { 
-                e.preventDefault(); 
-                
-                if (prefix === 'papi') {
-                    if (i === configSetores[setorLogado].linhasPA - 1) {
-                        let firstInsQtd = document.getElementById('ins-qtd-0');
-                        if (firstInsQtd) firstInsQtd.focus();
-                    } else {
-                        let nextLido = document.getElementById(`papi-lido-${i + 1}`);
-                        if (nextLido) nextLido.focus();
-                    }
-                } 
-                else if (prefix === 'ins') {
-                    let totalIns = (setorLogado === "injesop") ? insumosInjeSopro.length : ((setorLogado === "decoracao") ? insumosDecoracaoGeral.length : insumosDinamoGeral.length);
-                    if (i === totalIns - 1) {
-                        if (setorLogado === "decoracao") {
-                            let firstSlvLido = document.getElementById('slvpapi-lido-0');
-                            if (firstSlvLido) firstSlvLido.focus();
-                        } else if (setorLogado === "dinamo") {
-                            let firstResQtd = document.getElementById('res-qtd-0');
-                            if (firstResQtd) firstResQtd.focus();
-                        }
-                    } else {
-                        let nextQtd = document.getElementById(`ins-qtd-${i + 1}`);
-                        if (nextQtd) nextQtd.focus();
-                    }
-                }
-                else if (prefix === 'slvpapi') {
-                    if (i === 6) {
-                        let firstSlvInsQtd = document.getElementById('slvins-qtd-0');
-                        if (firstSlvInsQtd) firstSlvInsQtd.focus();
-                    } else {
-                        let nextSlvLido = document.getElementById(`slvpapi-lido-${i + 1}`);
-                        if (nextSlvLido) nextSlvLido.focus();
-                    }
-                }
-                else if (prefix === 'slvins') {
-                    let nextSlvInsQtd = document.getElementById(`slvins-qtd-${i + 1}`);
-                    if (nextSlvInsQtd) nextSlvInsQtd.focus();
-                }
-                else if (prefix === 'res') {
-                    if (i === resinasDinamoFixas.length - 1) {
-                        let firstMstLido = document.getElementById('mst-lido-0');
-                        if (firstMstLido) firstMstLido.focus();
-                    } else {
-                        let nextResQtd = document.getElementById(`res-qtd-${i + 1}`);
-                        if (nextResQtd) nextResQtd.focus();
-                    }
-                }
-                else if (prefix === 'mst') {
-                    let nextMstLido = document.getElementById(`mst-lido-${i + 1}`);
-                    if (nextMstLido) nextMstLido.focus();
-                }
-            } 
-        }
-
-        function abrirCalc(i, t, tab) { lAlvo=i; tAlvo=t; tabAlvo=tab; document.getElementById('p-t').value = ""; document.getElementById('q-m').value = ""; document.getElementById('modalCalc').style.display='block'; document.getElementById('q-m').style.display = t==='Fita'?'block':'none'; }
-        function fecharModais() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
-        function tentarSair() { document.getElementById('modalSairPerg').style.display = 'block'; }
-        function logoutDireto() { location.reload(); }
-
-        function aplicarCalculo() { 
-            const p = parseFloat(document.getElementById('p-t').value) || 0; 
-            const m = parseFloat(document.getElementById('q-m').value) || 0; 
-            let res = 0; 
-            if(tAlvo === 'Fita') { 
-                res = (((p - (m * 30)) * 50) / 270) / 50; 
-                document.getElementById(`${tabAlvo}-qtd-${lAlvo}`).value = res.toFixed(1); 
-            } else { 
-                let divisor = 1;
-                if (tAlvo === 'Lamina Fina') divisor = 8;
-                else if (tAlvo === 'Lamina Grossa') divisor = 28;
-                else if (tAlvo === 'Lamina TNT') divisor = 4;
-                res = Math.ceil(p / divisor); 
-                document.getElementById(`${tabAlvo}-qtd-${lAlvo}`).value = res; 
-            } 
-            fecharModais(); 
-            document.getElementById(`${tabAlvo}-qtd-${lAlvo}`).focus();
-        }
-
-        function carregarDadosDash() {
-            const tbody = document.getElementById('corpo-dash');
-            tbody.innerHTML = `<tr><td colspan="8" style="padding:20px; color:#666;">Buscando dados atualizados no Google Sheets...</td></tr>`;
-
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", urlPlanilha, true);
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4) {
-                    if (xhr.status === 200 || xhr.status === 0) {
-                        try {
-                            dadosGlobaisDash = JSON.parse(xhr.responseText);
-                            renderizarTabelaDash();
-                        } catch (e) {
-                            tbody.innerHTML = `<tr><td colspan="8" style="padding:20px; color:red;">Erro ao processar dados da planilha!</td></tr>`;
-                        }
-                    } else {
-                        tbody.innerHTML = `<tr><td colspan="8" style="padding:20px; color:red;">Erro de comunicação com a planilha!</td></tr>`;
-                    }
-                }
+    // VARREDURA RÁPIDA DE AGRUPAMENTO (SOMA LOTES IGUAIS)
+    let mapaConsolidado = {};
+    dados.itens.forEach(item => {
+        let chave = `${item.codigo}_${item.lote}`;
+        if (!mapaConsolidado[chave]) {
+            mapaConsolidado[chave] = {
+                codigo: item.codigo,
+                descricao: item.descricao,
+                lote: item.lote,
+                um: item.um,
+                qtd: 0
             };
-            xhr.send();
         }
+        mapaConsolidado[chave].qtd += item.qtd;
+    });
 
-        function renderizarTabelaDash() {
-            const fSetor = document.getElementById('filtro-setor').value.toUpperCase().trim();
-            const fBusca = document.getElementById('busca-dash').value.toLowerCase().trim();
-            const tbody = document.getElementById('corpo-dash');
-            tbody.innerHTML = "";
-
-            let totalItens = 0;
-            let linesFiltradas = 0;
-
-            dadosGlobaisDash.forEach(row => {
-                let dataFormata = new Date(row[0]).toLocaleString();
-                let setor = (row[1] || "").toUpperCase().trim();
-                let resp = (row[2] || "").toLowerCase().trim();
-                let codigo = (row[3] || "").toString().toLowerCase().trim();
-                let desc = (row[4] || "").toLowerCase().trim();
-                let lote = row[5] || "";
-                let um = row[6] || "";
-                let qtd = parseFloat(row[7]) || 0;
-
-                let bateSetor = (fSetor === "TODOS" || setor === fSetor);
-                let bateBusca = (fBusca === "" || resp.includes(fBusca) || codigo.includes(fBusca) || desc.includes(fBusca));
-
-                if (bateSetor && bateBusca) {
-                    linesFiltradas++;
-                    totalItens += qtd;
-
-                    tbody.innerHTML += `
-                        <tr>
-                            <td style="padding:6px;">${dataFormata}</td>
-                            <td>${row[1] || ""}</td>
-                            <td>${row[2] || ""}</td>
-                            <td>${row[3] || ""}</td>
-                            <td>${row[4] || ""}</td>
-                            <td>${lote}</td>
-                            <td>${um}</td>
-                            <td>${qtd}</td>
-                        </tr>
-                    `;
-                }
-            });
-
-            document.getElementById('dash-ops').innerText = linesFiltradas;
-            document.getElementById('dash-itens').innerText = totalItens.toLocaleString();
-
-            if (linesFiltradas === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" style="padding:20px; color:#999;">Nenhum registro encontrado para o filtro selecionado.</td></tr>`;
-            }
-        }
-
-        function validarResponsavel() {
-            const resp = document.getElementById('resp-name').value.trim();
-            if (!resp) { document.getElementById('modalAvisoResp').style.display = 'block'; return; }
-
-            const btnSalvar = document.getElementById('btn-salvar');
-            btnSalvar.innerText = "ENVIANDO... AGUARDE"; btnSalvar.disabled = true;
-            
-            let dados = { setor: configSetores[setorLogado].label, responsavel: resp, itens: [] };
-            
-            if (setorLogado !== "master") {
-                const limitePA = configSetores[setorLogado].linhasPA;
-                for (let i = 0; i < limitePA; i++) {
-                    let codMat = document.getElementById(`papi-mat-${i}`).value.trim();
-                    let dsMat = document.getElementById(`papi-ds-${i}`).value.trim();
-                    let loteMat = document.getElementById(`papi-lote-${i}`).value.trim();
-                    let umMat = document.getElementById(`papi-um-${i}`).value.trim();
-                    let qtdMat = parseFloat(document.getElementById(`papi-qtd-${i}`).value) || 0;
-                    if (qtdMat > 0 && codMat) {
-                        dados.itens.push({ codigo: codMat, descricao: dsMat, lote: loteMat, um: umMat, qtd: qtdMat });
-                    }
-                }
-                
-                let listaInsumos = insumosInjeSopro;
-                if (setorLogado === "decoracao") listaInsumos = insumosDecoracaoGeral;
-                if (setorLogado === "dinamo") listaInsumos = insumosDinamoGeral;
-                
-                listaInsumos.forEach((it, i) => {
-                    let qtdIns = parseFloat(document.getElementById('ins-qtd-' + i).value) || 0;
-                    if (qtdIns > 0) {
-                        dados.itens.push({ codigo: it.id, descricao: it.ds, lote: "N/A", um: it.um, qtd: qtdIns });
-                    }
-                });
-
-                if (setorLogado === "decoracao") {
-                    for (let i = 0; i < 7; i++) {
-                        let codMat = document.getElementById(`slvpapi-mat-${i}`).value.trim();
-                        let dsMat = document.getElementById(`slvpapi-ds-${i}`).value.trim();
-                        let loteMat = document.getElementById(`slvpapi-lote-${i}`).value.trim();
-                        let umMat = document.getElementById(`slvpapi-um-${i}`).value.trim();
-                        let qtdMat = parseFloat(document.getElementById(`slvpapi-qtd-${i}`).value) || 0;
-                        if (qtdMat > 0 && codMat) {
-                            dados.itens.push({ codigo: codMat, descricao: dsMat, lote: loteMat, um: umMat, qtd: qtdMat });
-                        }
-                    }
-                    insumosDecoracaoSleeve.forEach((it, i) => {
-                        let qtdIns = parseFloat(document.getElementById(`slvins-qtd-${i}`).value) || 0;
-                        if (qtdIns > 0) {
-                            dados.itens.push({ codigo: it.id, descricao: it.ds, lote: "N/A", um: it.um, qtd: qtdIns });
-                        }
-                    });
-                }
-
-                if (setorLogado === "dinamo") {
-                    resinasDinamoFixas.forEach((it, i) => {
-                        let qtdRes = parseFloat(document.getElementById(`res-qtd-${i}`).value) || 0;
-                        if (qtdRes > 0) {
-                            dados.itens.push({ codigo: it.id, descricao: it.ds, lote: "N/A", um: "KG", qtd: qtdRes });
-                        }
-                    });
-                }
-            }
-
-            // CAPTURA DO SETOR MASTER / DÍNAMO (COM REGRA DE SEPARAÇÃO GARANTIDA)
-            if (setorLogado === "dinamo" || setorLogado === "master") {
-                const limiteMaster = configSetores[setorLogado].linhasPA;
-                for (let i = 0; i < limiteMaster; i++) {
-                    let lido = document.getElementById(`mst-lido-${i}`).value.trim();
-                    let codMat = document.getElementById(`mst-mat-${i}`).value.trim();
-                    let dsMat = document.getElementById(`mst-ds-${i}`).value.trim();
-                    let loteMat = document.getElementById(`mst-lote-${i}`).value.trim();
-                    let umMat = document.getElementById(`mst-um-${i}`).value.trim() || "KG";
-                    let qtdMat = parseFloat(document.getElementById(`mst-qtd-${i}`).value) || 0;
-
-                    // Se a pessoa digitou manualmente mas não disparou o evento do leitor
-                    if ((!codMat || !loteMat) && lido !== "") {
-                        let lidoPadrao = lido.replace('|', '}');
-                        let partes = lidoPadrao.split('}');
-                        if (partes.length >= 2) {
-                            codMat = partes[0].trim();
-                            loteMat = partes[1].trim();
-                        } else {
-                            codMat = lido;
-                            loteMat = "S/L";
-                        }
-                    }
-
-                    if (qtdMat > 0 && codMat) {
-                        dados.itens.push({ codigo: codMat, descricao: dsMat, lote: loteMat, um: umMat, qtd: qtdMat });
-                    }
-                }
-            }
-
-            // VARREDURA RÁPIDA: SOMA OS LOTES IGUAIS ANTES DE ENVIAR
-            let mapaConsolidado = {};
-            dados.itens.forEach(item => {
-                let chave = `${item.codigo.trim()}_${item.lote.trim()}`;
-                if (!mapaConsolidado[chave]) {
-                    mapaConsolidado[chave] = {
-                        codigo: item.codigo,
-                        descricao: item.descricao,
-                        lote: item.lote,
-                        um: item.um,
-                        qtd: 0
-                    };
-                }
-                mapaConsolidado[chave].qtd += item.qtd;
-            });
-
-            dados.itens = Object.values(mapaConsolidado);
-
-            // Evita enviar dados vazios
-            if (dados.itens.length === 0) {
-                alert("Preencha ao menos uma quantidade válida!");
-                btnSalvar.innerText = "SALVAR INVENTÁRIO"; 
-                btnSalvar.disabled = false;
-                return;
-            }
-
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", urlPlanilha, true);
-            xhr.setRequestHeader("Content-Type", "text/plain;charset=UTF-8");
-            
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4) {
-                    document.getElementById('modalSucesso').style.display = 'block';
-                    btnSalvar.innerText = "SALVAR INVENTÁRIO"; 
-                    btnSalvar.disabled = false;
-                    gerarEstrutura();
-                }
-            };
-            
-            xhr.onerror = function() {
-                document.getElementById('modalSucesso').style.display = 'block';
-                btnSalvar.innerText = "SALVAR INVENTÁRIO"; 
-                btnSalvar.disabled = false;
-                gerarEstrutura();
-            };
-
-            xhr.send(JSON.stringify(dados));
-        }
-
-        window.onload = () => {
-            setInterval(() => { document.getElementById('data-hora').innerText = new Date().toLocaleString(); }, 1000);
+    // REFORMATANDO PARA ENVIO COMPATÍVEL COM O GOOGLE APPS SCRIPT ORIGINAL (ENVIA QTD COMO STRING/TEXTO)
+    dados.itens = Object.values(mapaConsolidado).map(it => {
+        return {
+            codigo: it.codigo,
+            descricao: it.descricao,
+            lote: it.lote,
+            um: it.um,
+            qtd: String(it.qtd) // Converte de volta para Texto para ser 100% aceito pela planilha!
         };
+    });
 
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('PWA Spiltag registrado com sucesso!', reg))
-                    .catch(err => console.error('Erro ao registrar PWA:', err));
-            });
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", urlPlanilha, true);
+    xhr.setRequestHeader("Content-Type", "text/plain;charset=UTF-8");
+    
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            document.getElementById('modalSucesso').style.display = 'block';
+            btnSalvar.innerText = "SALVAR INVENTÁRIO"; 
+            btnSalvar.disabled = false;
+            gerarEstrutura();
         }
-    </script>
+    };
+    
+    xhr.onerror = function() {
+        document.getElementById('modalSucesso').style.display = 'block';
+        btnSalvar.innerText = "SALVAR INVENTÁRIO"; 
+        btnSalvar.disabled = false;
+        gerarEstrutura();
+    };
 
-    <div id="modalCalc" class="modal"><div class="modal-content"><h3>Calculadora</h3><input type="number" id="p-t" class="calc-input" placeholder="Peso (g)"><input type="number" id="q-m" class="calc-input" placeholder="Miolos"><div class="modal-btns"><button class="btn-confirm" onclick="aplicarCalculo()">APLICAR</button><button class="btn-no" onclick="fecharModais()">CANCELAR</button></div></div></div>
-    <div id="modalAvisoResp" class="modal"><div class="modal-content"><h3>⚠ Campo Obrigatório</h3><p>Preencha o nome do <b>RESPONSÁVEL</b>.</p><div class="modal-btns"><button class="btn-confirm" onclick="fecharModais()">OK</button></div></div></div>
-    <div id="modalSucesso" class="modal"><div class="modal-content"><h3>✔ SUCESSO!</h3><p>DADOS SALVOS COM SUCESSO.</p><div class="modal-btns"><button class="btn-confirm" onclick="fecharModais()">OK</button></div></div></div>
-    <div id="modalSairPerg" class="modal"><div class="modal-content"><h3>Sair do Sistema</h3><p>Deseja fechar o formulário de inventário?</p><div class="modal-btns"><button class="btn-confirm" onclick="logoutDireto()" style="background:#000;">SIM, SAIR</button><button class="btn-no" onclick="fecharModais()">VOLTAR</button></div></div></div>
-</body>
-</html>
+    xhr.send(JSON.stringify(dados));
+}
+
+window.onload = () => {
+    setInterval(() => { document.getElementById('data-hora').innerText = new Date().toLocaleString(); }, 1000);
+};
+
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('PWA Spiltag registrado com sucesso!', reg))
+            .catch(err => console.error('Erro ao registrar PWA:', err));
+    });
+}
