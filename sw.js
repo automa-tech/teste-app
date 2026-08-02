@@ -1,4 +1,4 @@
-const CACHE_NAME = 'spiltag-inventario-v14'; // Incrementado para v14 para forçar a atualização da versão de testes
+const CACHE_NAME = 'spiltag-inventario-v1';
 const assets = [
   './',
   './index.html',
