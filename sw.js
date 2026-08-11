@@ -1,4 +1,4 @@
-const CACHE_NAME = 'spiltag-inventario-v25';
+const CACHE_NAME = 'spiltag-inventario-v26';
 const assets = [
   './',
   './index.html',
