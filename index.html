@@ -478,9 +478,9 @@
                 for (let i = 0; i < limiteMaster; i++) {
                     let tr = document.createElement('tr');
                     tr.innerHTML = `
-                        <td><input class="cell-input" id="mst-lido-${i}" oninput="bipe(this, ${i}, 'mst')"></td>
+                        <td><input class="cell-input" id="mst-lido-${i}" oninput="bipe(this, ${i}, 'mst')" onkeydown="handleCodigoLidoKey(event, this, ${i}, 'mst')"></td>
                         <td><input class="cell-input cell-readonly text-center" id="mst-mat-${i}" readonly tabindex="-1"></td>
-                        <td><input class="cell-input cell-readonly text-center" id="mst-ds-${i}" value="**********************" readonly tabindex="-1"></td>
+                        <td><input class="cell-input cell-readonly text-center" id="mst-ds-${i}" value="" readonly tabindex="-1"></td>
                         <td><input class="cell-input cell-readonly text-center" id="mst-lote-${i}" readonly tabindex="-1"></td>
                         <td><input class="cell-input cell-readonly text-center" id="mst-um-${i}" value="KG" readonly tabindex="-1"></td>
                         <td><input class="cell-input" type="number" id="mst-qtd-${i}" onkeydown="handleEnter(event, 'mst', ${i})"></td>
@@ -501,7 +501,7 @@
                 return;
             }
             processandoBipe = true;
-            let vPadronizado = v.replace('|', '}');
+            let vPadronizado = v.replace(/\|/g, '}');
             let partes = vPadronizado.split('}');
             if (partes.length >= 2) {
                 document.getElementById(`${prefix}-mat-${i}`).value = partes[0].trim();
@@ -516,6 +516,32 @@
                     }
                     processandoBipe = false; 
                 }, 300);
+            }
+        }
+
+        function handleCodigoLidoKey(e, el, i, prefix) {
+            if (e.key !== 'Enter' && e.key !== 'Tab') return;
+
+            const valor = el.value.trim();
+            const normalizado = valor.replace(/\|/g, '}');
+            const partes = normalizado.split('}');
+
+            if (partes.length >= 2 && partes[0].trim() && partes[1].trim()) {
+                e.preventDefault();
+                document.getElementById(`${prefix}-mat-${i}`).value = partes[0].trim();
+                document.getElementById(`${prefix}-lote-${i}`).value = partes[1].trim();
+
+                if (prefix === 'mst') {
+                    const ds = document.getElementById(`${prefix}-ds-${i}`);
+                    const um = document.getElementById(`${prefix}-um-${i}`);
+                    if (ds) ds.value = '';
+                    if (um) um.value = 'KG';
+                }
+
+                const qtd = document.getElementById(`${prefix}-qtd-${i}`);
+                if (qtd) {
+                    setTimeout(() => qtd.focus(), 0);
+                }
             }
         }
 
@@ -638,30 +664,79 @@
             // CAPTURA EXCLUSIVA DO SETOR MASTER OU DÍNAMO
             if (setorLogado === "dinamo" || setorLogado === "master") {
                 const limiteMaster = configSetores[setorLogado].linhasPA;
-                for (let i = 0; i < limiteMaster; i++) {
-                    let campoLido = document.getElementById(`mst-lido-${i}`);
-                    let campoQtd = document.getElementById(`mst-qtd-${i}`);
 
-                    if (campoLido && campoQtd) {
-                        let txtLido = campoLido.value.trim();
-                        let txtQtd = campoQtd.value.trim();
+                // MASTER: lê diretamente Código Lido + Quantidade e consolida por Código + Lote
+                if (setorLogado === "master") {
+                    const consolidados = {};
 
-                        if (txtLido !== "" && txtQtd !== "") {
-                            // Quebra do Código Lido (suporta '|' e '}')
-                            let textoLimpo = txtLido.replace('|', '}');
-                            let partes = textoLimpo.split('}');
-                            
-                            let cod = partes[0] ? partes[0].trim() : txtLido;
-                            let lot = partes[1] ? partes[1].trim() : "S/L";
-                            let dsMat = document.getElementById(`mst-ds-${i}`).value.trim();
+                    for (let i = 0; i < limiteMaster; i++) {
+                        const campoLido = document.getElementById(`mst-lido-${i}`);
+                        const campoQtd = document.getElementById(`mst-qtd-${i}`);
 
-                            dados.itens.push({
+                        if (!campoLido || !campoQtd) continue;
+
+                        const txtLido = campoLido.value.trim();
+                        const txtQtd = campoQtd.value.trim();
+
+                        if (txtLido === "" || txtQtd === "") continue;
+
+                        // Aceita tanto leitor físico com } quanto digitação manual com |
+                        const textoLimpo = txtLido.replace(/\|/g, '}');
+                        const partes = textoLimpo.split('}');
+                        const cod = (partes[0] || '').trim();
+                        const lot = (partes[1] || '').trim();
+                        const qtdNumero = parseFloat(txtQtd.replace(',', '.'));
+
+                        if (!cod || !lot || Number.isNaN(qtdNumero)) continue;
+
+                        const chave = `${cod}|||${lot}`;
+
+                        if (!consolidados[chave]) {
+                            consolidados[chave] = {
                                 codigo: cod,
-                                descricao: dsMat,
+                                descricao: "",
                                 lote: lot,
                                 um: "KG",
-                                qtd: txtQtd
-                            });
+                                qtd: 0
+                            };
+                        }
+
+                        consolidados[chave].qtd += qtdNumero;
+                    }
+
+                    dados.itens = Object.values(consolidados).map(item => ({
+                        codigo: item.codigo,
+                        descricao: "",
+                        lote: item.lote,
+                        um: "KG",
+                        qtd: item.qtd
+                    }));
+
+                } else {
+                    // DÍNAMO: mantém o comportamento atual do bloco de Master
+                    for (let i = 0; i < limiteMaster; i++) {
+                        const campoLido = document.getElementById(`mst-lido-${i}`);
+                        const campoQtd = document.getElementById(`mst-qtd-${i}`);
+
+                        if (campoLido && campoQtd) {
+                            const txtLido = campoLido.value.trim();
+                            const txtQtd = campoQtd.value.trim();
+
+                            if (txtLido !== "" && txtQtd !== "") {
+                                const textoLimpo = txtLido.replace(/\|/g, '}');
+                                const partes = textoLimpo.split('}');
+                                const cod = partes[0] ? partes[0].trim() : txtLido;
+                                const lot = partes[1] ? partes[1].trim() : "S/L";
+                                const dsMat = document.getElementById(`mst-ds-${i}`).value.trim();
+
+                                dados.itens.push({
+                                    codigo: cod,
+                                    descricao: dsMat,
+                                    lote: lot,
+                                    um: "KG",
+                                    qtd: txtQtd
+                                });
+                            }
                         }
                     }
                 }
