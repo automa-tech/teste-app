@@ -799,27 +799,92 @@
                 return;
             }
 
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", urlPlanilha, true);
-            xhr.setRequestHeader("Content-Type", "text/plain;charset=UTF-8");
-            
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4) {
+            // ENVIO AO GOOGLE SHEETS
+            // Para o login MASTER, envia 1 requisição por item consolidado.
+            // O payload leva os campos também no nível principal para manter
+            // compatibilidade com Apps Scripts que não percorrem dados.itens.
+            if (setorLogado === "master") {
+                let pendentes = dados.itens.length;
+                let houveErro = false;
+
+                const finalizarEnvioMaster = () => {
+                    pendentes--;
+                    if (pendentes > 0) return;
+
+                    btnSalvar.innerText = "SALVAR INVENTÁRIO";
+                    btnSalvar.disabled = false;
+
+                    if (houveErro) {
+                        alert("Houve erro de comunicação em pelo menos um item. Confira a planilha antes de tentar novamente.");
+                        return;
+                    }
+
                     document.getElementById('modalSucesso').style.display = 'block';
-                    btnSalvar.innerText = "SALVAR INVENTÁRIO"; 
+                    gerarEstrutura();
+                };
+
+                dados.itens.forEach(item => {
+                    const payload = {
+                        setor: dados.setor,
+                        responsavel: dados.responsavel,
+                        codigo: item.codigo,
+                        descricao: "",
+                        lote: item.lote,
+                        um: "KG",
+                        qtd: item.qtd,
+                        quantidade: item.qtd,
+                        itens: [{
+                            codigo: item.codigo,
+                            descricao: "",
+                            lote: item.lote,
+                            um: "KG",
+                            qtd: item.qtd
+                        }]
+                    };
+
+                    const xhrItem = new XMLHttpRequest();
+                    xhrItem.open("POST", urlPlanilha, true);
+                    xhrItem.setRequestHeader("Content-Type", "text/plain;charset=UTF-8");
+
+                    xhrItem.onreadystatechange = function () {
+                        if (xhrItem.readyState === 4) {
+                            if (!(xhrItem.status === 200 || xhrItem.status === 0)) houveErro = true;
+                            finalizarEnvioMaster();
+                        }
+                    };
+
+                    xhrItem.onerror = function () {
+                        houveErro = true;
+                        finalizarEnvioMaster();
+                    };
+
+                    xhrItem.send(JSON.stringify(payload));
+                });
+
+            } else {
+                // Demais setores mantêm exatamente o envio original.
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", urlPlanilha, true);
+                xhr.setRequestHeader("Content-Type", "text/plain;charset=UTF-8");
+
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4) {
+                        document.getElementById('modalSucesso').style.display = 'block';
+                        btnSalvar.innerText = "SALVAR INVENTÁRIO";
+                        btnSalvar.disabled = false;
+                        gerarEstrutura();
+                    }
+                };
+
+                xhr.onerror = function() {
+                    document.getElementById('modalSucesso').style.display = 'block';
+                    btnSalvar.innerText = "SALVAR INVENTÁRIO";
                     btnSalvar.disabled = false;
                     gerarEstrutura();
-                }
-            };
-            
-            xhr.onerror = function() {
-                document.getElementById('modalSucesso').style.display = 'block';
-                btnSalvar.innerText = "SALVAR INVENTÁRIO"; 
-                btnSalvar.disabled = false;
-                gerarEstrutura();
-            };
+                };
 
-            xhr.send(JSON.stringify(dados));
+                xhr.send(JSON.stringify(dados));
+            }
         }
 
         window.onload = () => {
