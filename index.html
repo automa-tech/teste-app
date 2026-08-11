@@ -480,7 +480,7 @@
                     tr.innerHTML = `
                         <td><input class="cell-input" id="mst-lido-${i}" oninput="bipe(this, ${i}, 'mst')" onkeydown="handleCodigoLidoKey(event, this, ${i}, 'mst')"></td>
                         <td><input class="cell-input cell-readonly text-center" id="mst-mat-${i}" readonly tabindex="-1"></td>
-                        <td><input class="cell-input cell-readonly text-center" id="mst-ds-${i}" value="" readonly tabindex="-1"></td>
+                        <td><input class="cell-input cell-readonly text-center" id="mst-ds-${i}" value="**********************" readonly tabindex="-1"></td>
                         <td><input class="cell-input cell-readonly text-center" id="mst-lote-${i}" readonly tabindex="-1"></td>
                         <td><input class="cell-input cell-readonly text-center" id="mst-um-${i}" value="KG" readonly tabindex="-1"></td>
                         <td><input class="cell-input" type="number" id="mst-qtd-${i}" onkeydown="handleEnter(event, 'mst', ${i})"></td>
@@ -694,7 +694,7 @@
                         if (!consolidados[chave]) {
                             consolidados[chave] = {
                                 codigo: cod,
-                                descricao: "",
+                                descricao: "**********************",
                                 lote: lot,
                                 um: "KG",
                                 qtd: 0
@@ -706,7 +706,7 @@
 
                     dados.itens = Object.values(consolidados).map(item => ({
                         codigo: item.codigo,
-                        descricao: "",
+                        descricao: "**********************",
                         lote: item.lote,
                         um: "KG",
                         qtd: item.qtd
@@ -825,20 +825,55 @@
 
                 dados.itens.forEach(item => {
                     const payload = {
+                        // Campos gerais
                         setor: dados.setor,
                         responsavel: dados.responsavel,
+
+                        // Campos do item no nível principal. Mantemos aliases para
+                        // compatibilidade com diferentes versões do Apps Script.
                         codigo: item.codigo,
-                        descricao: "",
+                        codigoMaterial: item.codigo,
+                        codigo_material: item.codigo,
+                        material: item.codigo,
+
+                        descricao: "**********************",
+                        descricaoMaterial: "**********************",
+                        descricao_material: "**********************",
+
                         lote: item.lote,
+                        loteMaterial: item.lote,
+                        lote_material: item.lote,
+
                         um: "KG",
+                        unidade: "KG",
+                        unidadeMedida: "KG",
+                        unidade_medida: "KG",
+
                         qtd: item.qtd,
                         quantidade: item.qtd,
+                        qtdMaterial: item.qtd,
+                        quantidadeMaterial: item.qtd,
+
+                        // Também mantém o padrão original com array de itens.
                         itens: [{
                             codigo: item.codigo,
-                            descricao: "",
+                            codigoMaterial: item.codigo,
+                            codigo_material: item.codigo,
+                            material: item.codigo,
+                            descricao: "**********************",
+                            descricaoMaterial: "**********************",
+                            descricao_material: "**********************",
                             lote: item.lote,
+                            loteMaterial: item.lote,
+                            lote_material: item.lote,
                             um: "KG",
-                            qtd: item.qtd
+                            unidade: "KG",
+                            unidadeMedida: "KG",
+                            unidade_medida: "KG",
+                            qtd: item.qtd,
+                            quantidade: item.qtd,
+                            qtdMaterial: item.qtd,
+                            quantidadeMaterial: item.qtd
                         }]
                     };
 
