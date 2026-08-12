@@ -366,8 +366,7 @@
         }
 
         function gerarEstrutura() {
-            // ACESSO EXCLUSIVO DO INVENTÁRIO DE MASTER
-            // Mantém a comunicação original do aplicativo e altera apenas a tela/coleta deste login.
+            // Acesso MASTER: mostra somente o bloco de Master com 50 linhas.
             if (setorLogado === "master") {
                 document.getElementById('bloco-papi-geral').style.display = 'none';
                 document.getElementById('bloco-insumos-geral').style.display = 'none';
@@ -378,11 +377,10 @@
 
                 const cm = document.getElementById('corpo-master-dinamo');
                 cm.innerHTML = "";
-
                 for (let i = 0; i < 50; i++) {
                     let tr = document.createElement('tr');
                     tr.innerHTML = `
-                        <td><input class="cell-input" id="mst-lido-${i}" oninput="bipe(this, ${i}, 'mst')"></td>
+                        <td><input class="cell-input" id="mst-lido-${i}" oninput="bipe(this, ${i}, 'mst')" onkeydown="handleCodigoKey(event, 'mst', ${i})"></td>
                         <td><input class="cell-input cell-readonly text-center" id="mst-mat-${i}" readonly tabindex="-1"></td>
                         <td><input class="cell-input cell-readonly text-center" id="mst-ds-${i}" value="**********************" readonly tabindex="-1"></td>
                         <td><input class="cell-input cell-readonly text-center" id="mst-lote-${i}" readonly tabindex="-1"></td>
@@ -391,10 +389,14 @@
                     `;
                     cm.appendChild(tr);
                 }
+                setTimeout(() => {
+                    const primeiro = document.getElementById('mst-lido-0');
+                    if (primeiro) primeiro.focus();
+                }, 50);
                 return;
             }
 
-            // DEMAIS SETORES: comportamento original
+            // DEMAIS ACESSOS: lógica original do aplicativo principal, sem alteração.
             document.getElementById('bloco-papi-geral').style.display = 'block';
             document.getElementById('bloco-insumos-geral').style.display = 'block';
 
@@ -515,12 +517,10 @@
                 return;
             }
             processandoBipe = true;
-            // Leitor físico usa '}' e a digitação manual pode usar '|'.
-            let vPadronizado = v.replace(/\|/g, '}');
-            let partes = vPadronizado.split('}');
+            let partes = v.replace('|', '}').split('}');
             if (partes.length >= 2) {
-                document.getElementById(`${prefix}-mat-${i}`).value = partes[0].trim();
-                document.getElementById(`${prefix}-lote-${i}`).value = partes[1].trim();
+                document.getElementById(`${prefix}-mat-${i}`).value = partes[0];
+                document.getElementById(`${prefix}-lote-${i}`).value = partes[1];
                 qtdField.value = "";
                 
                 let limpador = setInterval(() => { qtdField.value = ""; }, 10);
@@ -530,6 +530,18 @@
                     qtdField.focus(); 
                     processandoBipe = false; 
                 }, 300);
+            }
+        }
+
+        function handleCodigoKey(e, prefix, i) {
+            if ((e.key === 'Enter' || e.key === 'Tab') && prefix === 'mst') {
+                const campo = document.getElementById(`${prefix}-lido-${i}`);
+                const qtd = document.getElementById(`${prefix}-qtd-${i}`);
+                if (campo && qtd && /[}|]/.test(campo.value)) {
+                    e.preventDefault();
+                    bipe(campo, i, prefix);
+                    setTimeout(() => qtd.focus(), 10);
+                }
             }
         }
 
@@ -692,62 +704,51 @@
             const btnSalvar = document.getElementById('btn-salvar');
             btnSalvar.innerText = "ENVIANDO... AGUARDE"; btnSalvar.disabled = true;
             
-            // Mesmo formato de dados utilizado pelo aplicativo principal.
             let dados = { setor: configSetores[setorLogado].label, responsavel: resp, itens: [] };
 
             if (setorLogado === "master") {
-                // MASTER: lê diretamente as 50 linhas da tela e consolida por CÓDIGO + LOTE.
-                const consolidados = new Map();
+                // ÚNICA REGRA NOVA: consolida linhas repetidas por Código + Lote.
+                const consolidados = {};
 
                 for (let i = 0; i < 50; i++) {
                     const campoLido = document.getElementById(`mst-lido-${i}`);
                     const campoQtd = document.getElementById(`mst-qtd-${i}`);
                     if (!campoLido || !campoQtd) continue;
 
-                    const lido = campoLido.value.trim();
-                    const qtdTexto = campoQtd.value.trim();
-                    if (!lido || !qtdTexto) continue;
+                    const leitura = campoLido.value.trim();
+                    const qtdTexto = campoQtd.value.toString().trim();
+                    if (!leitura || !qtdTexto) continue;
 
-                    // Garante a extração mesmo que os campos auxiliares não tenham sido atualizados.
-                    const partes = lido.replace(/\|/g, '}').split('}');
+                    const partes = leitura.replace('|', '}').split('}');
                     const codigo = (partes[0] || '').trim();
                     const lote = (partes[1] || '').trim();
+                    if (!codigo || !lote) continue;
 
-                    // Aceita ponto ou vírgula como separador decimal.
                     const quantidade = parseFloat(qtdTexto.replace(',', '.'));
+                    if (!Number.isFinite(quantidade) || quantidade <= 0) continue;
 
-                    if (!codigo || !lote || !Number.isFinite(quantidade) || quantidade <= 0) continue;
-
-                    const chave = codigo + '|||' + lote;
-                    if (!consolidados.has(chave)) {
-                        consolidados.set(chave, {
+                    const chave = codigo + '||' + lote;
+                    if (!consolidados[chave]) {
+                        consolidados[chave] = {
                             codigo: codigo,
                             descricao: "**********************",
                             lote: lote,
                             um: "KG",
                             qtd: 0
-                        });
+                        };
                     }
-                    consolidados.get(chave).qtd += quantidade;
+                    consolidados[chave].qtd += quantidade;
                 }
 
-                dados.itens = Array.from(consolidados.values()).map(item => ({
+                dados.itens = Object.values(consolidados).map(item => ({
                     codigo: item.codigo,
                     descricao: item.descricao,
                     lote: item.lote,
                     um: item.um,
-                    qtd: Number(item.qtd.toFixed(6))
+                    qtd: Number(item.qtd.toFixed(3))
                 }));
-
-                if (dados.itens.length === 0) {
-                    alert("Preencha ao menos uma linha válida antes de salvar!");
-                    btnSalvar.innerText = "SALVAR INVENTÁRIO";
-                    btnSalvar.disabled = false;
-                    return;
-                }
-
             } else {
-                // DEMAIS SETORES: coleta original, sem alteração na lógica.
+                // A PARTIR DAQUI É A LÓGICA ORIGINAL DO APP PRINCIPAL, SEM ALTERAÇÃO.
                 const limitePA = configSetores[setorLogado].linhasPA;
                 
                 for (let i = 0; i < limitePA; i++) {
@@ -811,7 +812,14 @@
                 }
             }
 
-            // ENVIO ORIGINAL DO APLICATIVO PRINCIPAL: um único POST com {setor, responsavel, itens}.
+            if (dados.itens.length === 0) {
+                alert("Preencha ao menos uma linha válida antes de salvar!");
+                btnSalvar.innerText = "SALVAR INVENTÁRIO";
+                btnSalvar.disabled = false;
+                return;
+            }
+
+            // MESMO POST DO APP PRINCIPAL.
             var xhr = new XMLHttpRequest();
             xhr.open("POST", urlPlanilha, true);
             xhr.setRequestHeader("Content-Type", "text/plain;charset=UTF-8");
