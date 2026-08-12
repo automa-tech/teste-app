@@ -798,30 +798,25 @@
                 return;
             }
 
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", urlPlanilha, true);
-            xhr.setRequestHeader("Content-Type", "text/plain;charset=UTF-8");
-
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4) {
-                    if (xhr.status >= 200 && xhr.status < 400) {
-                        document.getElementById('modalSucesso').style.display = 'block';
-                        gerarEstrutura();
-                    } else {
-                        alert("Não foi possível salvar o inventário. Tente novamente.");
-                    }
-                    btnSalvar.innerText = "SALVAR INVENTÁRIO";
-                    btnSalvar.disabled = false;
-                }
-            };
-
-            xhr.onerror = function() {
+            fetch(urlPlanilha, {
+                method: "POST",
+                mode: "no-cors",
+                headers: {
+                    "Content-Type": "text/plain;charset=UTF-8"
+                },
+                body: JSON.stringify(dados)
+            })
+            .then(() => {
+                document.getElementById('modalSucesso').style.display = 'block';
+                gerarEstrutura();
+            })
+            .catch(() => {
                 alert("Erro de comunicação com a planilha. Verifique a internet e tente novamente.");
+            })
+            .finally(() => {
                 btnSalvar.innerText = "SALVAR INVENTÁRIO";
                 btnSalvar.disabled = false;
-            };
-
-            xhr.send(JSON.stringify(dados));
+            });
         }
 
         window.onload = () => {
