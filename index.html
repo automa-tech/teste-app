@@ -77,21 +77,27 @@
             overflow: hidden;
             box-shadow: var(--shadow-soft);
         }
-        .header-table td { padding: 11px 14px; border: 0; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); font-weight: 500; }
+        .header-table td { padding: 7px 12px; border: 0; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); font-weight: 500; }
         .header-table tr:last-child td { border-bottom: 0; }
         .header-table td:last-child { border-right: 0; }
         .brand-cell { background: #fff; text-align:center; vertical-align:middle; }
-        .brand-logo { width: 275px; max-width: 92%; height: 92px; object-fit: contain; margin: 0 auto; }
+        .brand-logo { width: 215px; max-width: 90%; height: 70px; object-fit: contain; margin: 0 auto; }
         .brand-fallback { display:none; color:var(--accent); font-size:28px; font-weight:700; letter-spacing:1.5px; }
         .title-box {
             background: var(--surface-2);
             color: var(--text);
-            font-size: 20px;
+            font-size: 19px;
             text-align: center;
             font-weight: 650 !important;
             letter-spacing: .2px;
         }
-        #data-hora { background: var(--surface-2); color: var(--accent-dark); font-weight: 600 !important; }
+        #data-hora { background: var(--surface-2); color: var(--accent-dark); font-weight: 500 !important; font-size: 16px !important; }
+        #relogio { font-size: 16px; font-weight: 600; line-height: 1.2; }
+        #status-conexao { margin-top: 5px; font-size: 11px; font-weight: 600; color: var(--muted); white-space: nowrap; }
+        #status-conexao.online { color: #3f7a45; }
+        #status-conexao.offline { color: #a66b18; }
+        .responsavel-wrap { display:flex; align-items:center; width:100%; min-height:48px; padding-right:28px; }
+        #resp-name { flex: 0 1 760px; max-width: 760px; }
         #linha-responsavel span { color: var(--accent-dark); font-weight: 600; }
         #resp-name { background:#fff !important; border:1px solid var(--border) !important; border-radius:10px !important; padding:9px 12px !important; min-height:38px; }
 
@@ -218,7 +224,13 @@
         /* MODAIS */
         .modal { display:none; position:fixed; z-index:1000; inset:0; width:100%; height:100%; background:rgba(54,38,31,.58); backdrop-filter: blur(2px); }
         .modal-content { background:var(--surface); margin:12% auto; padding:30px; border:1px solid var(--border); width:450px; max-width:90vw; text-align:center; border-radius:18px; box-shadow:var(--shadow); }
-        .modal-content h3 { color:var(--accent-dark); }
+        .modal-content h3 { color:var(--accent-dark); font-weight:600; margin-top:8px; }
+        .modal-system-icon { width:52px; height:52px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 12px; font-size:25px; background:var(--surface-2); color:var(--accent-dark); border:1px solid var(--border); }
+        .modal-system-text { color:var(--muted); font-size:15px; line-height:1.5; margin:8px auto 0; max-width:360px; }
+        .modal-system-icon.sucesso { background:#edf6ed; color:#3f7a45; border-color:#cfe5cf; }
+        .modal-system-icon.aviso { background:#fff4df; color:#9a6518; border-color:#efd8ad; }
+        .modal-system-icon.erro { background:#f9e8ea; color:var(--accent-dark); border-color:#ebc8ce; }
+        .modal-system-icon.info { background:#f4eee7; color:#7a5b48; border-color:var(--border); }
         .modal-btns { display:flex; justify-content:center; gap:10px; margin-top:25px; flex-wrap:wrap; }
         .calc-input { width:100%; margin-bottom:12px; border:1px solid var(--border); border-radius:10px; padding:14px 10px; font-size:18px; font-weight:700; }
 
@@ -254,7 +266,7 @@
             <input type="text" id="user" placeholder="Usuário" onkeydown="if(event.key==='Enter') document.getElementById('pass').focus()">
             <input type="password" id="pass" placeholder="Senha" onkeydown="if(event.key==='Enter') autenticar()">
             <button class="btn-login" style="width: 100%; margin-top: 14px;" onclick="autenticar()">ENTRAR NO SISTEMA</button>
-            <p id="error-msg" style="color: var(--accent); font-size: 13px; display: none; margin-top: 12px; font-weight: 800;">Acesso negado!</p>
+            <p id="error-msg" style="color: var(--accent); font-size: 13px; display: none; margin-top: 12px; font-weight: 600;">Acesso negado!</p>
         </div>
     </div>
 
@@ -266,13 +278,13 @@
                     <div class="brand-fallback">SPILTAG</div>
                 </td>
                 <td class="title-box" id="label-setor" style="width:55%;">REGISTRO DE INVENTÁRIO</td>
-                <td style="width:25%; text-align:center; font-size:14px;" id="data-hora">--/--/---- --:--:--</td>
+                <td style="width:25%; text-align:center;" id="data-hora"><div id="relogio">--/--/---- --:--:--</div><div id="status-conexao">VERIFICANDO CONEXÃO...</div></td>
             </tr>
             <tr id="linha-responsavel">
                 <td colspan="2" style="padding: 0;">
-                    <div style="display: flex; align-items: center; width: 100%; height: 100%;">
+                    <div class="responsavel-wrap">
                         <span style="padding: 5px 10px; white-space: nowrap;">RESPONSÁVEL:</span>
-                        <input type="text" id="resp-name" class="cell-input" style="flex-grow: 1;" placeholder="digite seu nome...">
+                        <input type="text" id="resp-name" class="cell-input" placeholder="digite seu nome...">
                     </div>
                 </td>
             </tr>
@@ -433,6 +445,10 @@
         let lAlvo = null; let tAlvo = null; let tabAlvo = null;
         let processandoBipe = false;
         let dadosGlobaisDash = [];
+        let sincronizandoFila = false;
+        const DB_OFFLINE = "spiltagInventarioOffline";
+        const DB_OFFLINE_VERSAO = 1;
+        const STORE_FILA = "filaEnvios";
 
         const configSetores = {
             "injesop": { pass: "sopro@1324", label: "INJEÇÃO E SOPRO", linhasPA: 25 },
@@ -797,25 +813,44 @@
             document.getElementById(`${tabAlvo}-qtd-${lAlvo}`).focus();
         }
 
-        function carregarDadosDash() {
-            const tbody = document.getElementById('corpo-dash');
-            tbody.innerHTML = `<tr><td colspan="8" style="padding:20px; color:#666;">Buscando dados atualizados no Google Sheets...</td></tr>`;
+        function esperar(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
-            fetch(urlPlanilha, {
-                method: "GET",
-                redirect: "follow"
-            })
-            .then(response => {
-                if (!response.ok) throw new Error("Erro na rede");
-                return response.json();
-            })
-            .then(data => {
-                dadosGlobaisDash = data;
-                renderizarTabelaDash();
-            })
-            .catch(error => {
-                tbody.innerHTML = `<tr><td colspan="8" style="padding:20px; color:red;">Erro de comunicação com a planilha!</td></tr>`;
-            });
+        async function carregarDadosDash() {
+            const tbody = document.getElementById('corpo-dash');
+            tbody.innerHTML = `<tr><td colspan="8" style="padding:24px; color:var(--muted);">Consultando banco de dados...</td></tr>`;
+
+            if (!navigator.onLine) {
+                tbody.innerHTML = `<tr><td colspan="8" style="padding:24px; color:var(--muted);">Sem conexão. Os dados serão consultados quando a internet estiver disponível.</td></tr>`;
+                mostrarAviso('aviso', 'Sem conexão', 'O painel não pode consultar o banco de dados enquanto o dispositivo estiver offline.');
+                return;
+            }
+
+            let ultimoErro = null;
+            for (let tentativa = 1; tentativa <= 2; tentativa++) {
+                try {
+                    const response = await fetch(`${urlPlanilha}?t=${Date.now()}`, {
+                        method: "GET",
+                        redirect: "follow",
+                        cache: "no-store"
+                    });
+                    if (!response.ok) throw new Error(`Falha na consulta (${response.status})`);
+                    const data = await response.json();
+                    if (!Array.isArray(data)) throw new Error('Resposta inválida do banco de dados');
+                    dadosGlobaisDash = data;
+                    renderizarTabelaDash();
+                    return;
+                } catch (error) {
+                    ultimoErro = error;
+                    if (tentativa < 2) {
+                        tbody.innerHTML = `<tr><td colspan="8" style="padding:24px; color:var(--muted);">Consultando banco de dados... nova tentativa automática.</td></tr>`;
+                        await esperar(900);
+                    }
+                }
+            }
+
+            console.error('Falha ao consultar banco de dados:', ultimoErro);
+            tbody.innerHTML = `<tr><td colspan="8" style="padding:24px; color:var(--muted);">Não foi possível consultar o banco de dados neste momento.</td></tr>`;
+            mostrarAviso('erro', 'Falha de comunicação', 'Não foi possível consultar o banco de dados. Verifique a conexão e tente novamente.');
         }
 
         function renderizarTabelaDash() {
@@ -868,146 +903,305 @@
             }
         }
 
+        function criarIdOperacao() {
+            if (window.crypto && typeof window.crypto.randomUUID === 'function') return window.crypto.randomUUID();
+            return `op-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+        }
+
+        function abrirBancoOffline() {
+            return new Promise((resolve, reject) => {
+                const req = indexedDB.open(DB_OFFLINE, DB_OFFLINE_VERSAO);
+                req.onupgradeneeded = () => {
+                    const db = req.result;
+                    if (!db.objectStoreNames.contains(STORE_FILA)) {
+                        db.createObjectStore(STORE_FILA, { keyPath: 'id' });
+                    }
+                };
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => reject(req.error);
+            });
+        }
+
+        async function salvarNaFila(dados) {
+            const db = await abrirBancoOffline();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_FILA, 'readwrite');
+                tx.objectStore(STORE_FILA).put({
+                    id: dados.operacaoId,
+                    criadoEm: new Date().toISOString(),
+                    dados
+                });
+                tx.oncomplete = () => { db.close(); resolve(); };
+                tx.onerror = () => { db.close(); reject(tx.error); };
+            });
+        }
+
+        async function listarFila() {
+            const db = await abrirBancoOffline();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_FILA, 'readonly');
+                const req = tx.objectStore(STORE_FILA).getAll();
+                req.onsuccess = () => resolve(req.result || []);
+                req.onerror = () => reject(req.error);
+                tx.oncomplete = () => db.close();
+            });
+        }
+
+        async function removerDaFila(id) {
+            const db = await abrirBancoOffline();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_FILA, 'readwrite');
+                tx.objectStore(STORE_FILA).delete(id);
+                tx.oncomplete = () => { db.close(); resolve(); };
+                tx.onerror = () => { db.close(); reject(tx.error); };
+            });
+        }
+
+        async function quantidadePendente() {
+            try { return (await listarFila()).length; }
+            catch { return 0; }
+        }
+
+        async function atualizarStatusConexao() {
+            const el = document.getElementById('status-conexao');
+            if (!el) return;
+            const pendentes = await quantidadePendente();
+            const online = navigator.onLine;
+            el.className = online ? 'online' : 'offline';
+            el.textContent = online
+                ? `● ONLINE${pendentes ? ` • ${pendentes} PENDENTE${pendentes > 1 ? 'S' : ''}` : ''}`
+                : `● OFFLINE${pendentes ? ` • ${pendentes} PENDENTE${pendentes > 1 ? 'S' : ''}` : ''}`;
+        }
+
+        async function confirmarOperacaoNoBanco(id) {
+            for (let tentativa = 1; tentativa <= 5; tentativa++) {
+                try {
+                    const resp = await fetch(`${urlPlanilha}?acao=status&id=${encodeURIComponent(id)}&t=${Date.now()}`, {
+                        method: 'GET', cache: 'no-store', redirect: 'follow'
+                    });
+                    if (resp.ok) {
+                        const retorno = await resp.json();
+                        if (retorno && retorno.recebido === true) return true;
+                    }
+                } catch (e) {
+                    // A confirmação será tentada novamente abaixo.
+                }
+                await esperar(700);
+            }
+            return false;
+        }
+
+        async function enviarDadosComConfirmacao(dados) {
+            if (!navigator.onLine) throw new Error('OFFLINE');
+
+            // no-cors evita o falso erro causado pelos redirecionamentos do Apps Script.
+            // A confirmação real é feita em seguida pelo doGet(status).
+            await fetch(urlPlanilha, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+                body: JSON.stringify(dados)
+            });
+
+            const confirmado = await confirmarOperacaoNoBanco(dados.operacaoId);
+            if (!confirmado) throw new Error('SEM_CONFIRMACAO');
+            return true;
+        }
+
+        async function sincronizarFilaOffline(silencioso = true) {
+            if (sincronizandoFila || !navigator.onLine) {
+                await atualizarStatusConexao();
+                return;
+            }
+            sincronizandoFila = true;
+            let enviados = 0;
+            try {
+                const fila = await listarFila();
+                for (const registro of fila) {
+                    try {
+                        await enviarDadosComConfirmacao(registro.dados);
+                        await removerDaFila(registro.id);
+                        enviados++;
+                    } catch (erro) {
+                        console.warn('Envio pendente mantido na fila:', erro);
+                        break;
+                    }
+                }
+            } finally {
+                sincronizandoFila = false;
+                await atualizarStatusConexao();
+            }
+
+            if (enviados > 0 && !silencioso) {
+                mostrarAviso('sucesso', 'Sincronização concluída', `${enviados} registro${enviados > 1 ? 's foram sincronizados' : ' foi sincronizado'} com o banco de dados.`);
+            }
+        }
+
+        function mostrarAviso(tipo, titulo, mensagem) {
+            const modal = document.getElementById('modalSistema');
+            const icon = document.getElementById('modalSistemaIcon');
+            const title = document.getElementById('modalSistemaTitulo');
+            const text = document.getElementById('modalSistemaTexto');
+            const simbolos = { sucesso: '✓', aviso: '!', erro: '×', info: 'i' };
+            icon.className = `modal-system-icon ${tipo || 'info'}`;
+            icon.textContent = simbolos[tipo] || 'i';
+            title.textContent = titulo || 'Aviso';
+            text.textContent = mensagem || '';
+            modal.style.display = 'block';
+        }
+
+        function fecharModalSistema() {
+            document.getElementById('modalSistema').style.display = 'none';
+        }
+
         function numeroQuantidade(valor) {
             const normalizado = String(valor ?? '').trim().replace(',', '.');
             const n = Number(normalizado);
             return Number.isFinite(n) ? n : 0;
         }
 
-        function validarResponsavel() {
+        async function validarResponsavel() {
             const resp = document.getElementById('resp-name').value.trim();
-            if (!resp) { document.getElementById('modalAvisoResp').style.display = 'block'; return; }
+            if (!resp) {
+                mostrarAviso('aviso', 'Campo obrigatório', 'Preencha o nome do responsável antes de salvar o inventário.');
+                return;
+            }
 
             const btnSalvar = document.getElementById('btn-salvar');
-            btnSalvar.innerText = "ENVIANDO... AGUARDE";
+            btnSalvar.innerText = "SALVANDO...";
             btnSalvar.disabled = true;
 
-            let dados = { setor: configSetores[setorLogado].label, responsavel: resp, itens: [] };
+            let dados = {
+                operacaoId: criarIdOperacao(),
+                setor: configSetores[setorLogado].label,
+                responsavel: resp,
+                itens: []
+            };
 
             if (setorLogado === "master") {
                 const consolidados = new Map();
-
                 for (let i = 0; i < 80; i++) {
                     const campoLido = document.getElementById(`mst-lido-${i}`);
                     const campoQtd = document.getElementById(`mst-qtd-${i}`);
                     if (!campoLido || !campoQtd) continue;
-
                     const leitura = separarCodigoLote(campoLido.value);
                     const qtd = numeroQuantidade(campoQtd.value);
                     if (!leitura || !leitura.codigo || !leitura.lote || qtd <= 0) continue;
-
                     const chave = `${leitura.codigo}|||${leitura.lote}`;
                     if (!consolidados.has(chave)) {
-                        consolidados.set(chave, {
-                            codigo: leitura.codigo,
-                            descricao: "**********************",
-                            lote: leitura.lote,
-                            um: "KG",
-                            qtd: 0
-                        });
+                        consolidados.set(chave, { codigo: leitura.codigo, descricao: "**********************", lote: leitura.lote, um: "KG", qtd: 0 });
                     }
                     consolidados.get(chave).qtd += qtd;
                 }
-
-                dados.itens = Array.from(consolidados.values()).map(item => ({
-                    ...item,
-                    qtd: Number(item.qtd.toFixed(6))
-                }));
+                dados.itens = Array.from(consolidados.values()).map(item => ({ ...item, qtd: Number(item.qtd.toFixed(6)) }));
             } else {
                 const limitePA = configSetores[setorLogado].linhasPA;
-
                 for (let i = 0; i < limitePA; i++) {
                     let codMat = document.getElementById(`papi-mat-${i}`).value;
                     let dsMat = document.getElementById(`papi-ds-${i}`).value;
                     let loteMat = document.getElementById(`papi-lote-${i}`).value;
                     let umMat = document.getElementById(`papi-um-${i}`).value;
                     let qtdMat = document.getElementById(`papi-qtd-${i}`).value;
-                    if (qtdMat > 0 && codMat) {
-                        dados.itens.push({ codigo: codMat, descricao: dsMat, lote: loteMat, um: umMat, qtd: qtdMat });
-                    }
+                    if (numeroQuantidade(qtdMat) > 0 && codMat) dados.itens.push({ codigo: codMat, descricao: dsMat, lote: loteMat, um: umMat, qtd: qtdMat });
                 }
 
                 let listaInsumos = insumosInjeSopro;
                 if (setorLogado === "decoracao") listaInsumos = insumosDecoracaoGeral;
                 if (setorLogado === "dinamo") listaInsumos = insumosDinamoGeral;
-
                 listaInsumos.forEach((it, i) => {
-                    let qtdIns = document.getElementById('ins-qtd-' + i).value;
-                    if (qtdIns > 0) {
-                        dados.itens.push({ codigo: it.id, descricao: it.ds, lote: "N/A", um: it.um, qtd: qtdIns });
-                    }
+                    const qtdIns = document.getElementById('ins-qtd-' + i).value;
+                    if (numeroQuantidade(qtdIns) > 0) dados.itens.push({ codigo: it.id, descricao: it.ds, lote: "N/A", um: it.um, qtd: qtdIns });
                 });
 
                 if (setorLogado === "decoracao") {
                     for (let i = 0; i < 7; i++) {
-                        let codMat = document.getElementById(`slvpapi-mat-${i}`).value;
-                        let dsMat = document.getElementById(`slvpapi-ds-${i}`).value;
-                        let loteMat = document.getElementById(`slvpapi-lote-${i}`).value;
-                        let umMat = document.getElementById(`slvpapi-um-${i}`).value;
-                        let qtdMat = document.getElementById(`slvpapi-qtd-${i}`).value;
-                        if (qtdMat > 0 && codMat) {
-                            dados.itens.push({ codigo: codMat, descricao: dsMat, lote: loteMat, um: umMat, qtd: qtdMat });
-                        }
+                        const codMat = document.getElementById(`slvpapi-mat-${i}`).value;
+                        const dsMat = document.getElementById(`slvpapi-ds-${i}`).value;
+                        const loteMat = document.getElementById(`slvpapi-lote-${i}`).value;
+                        const umMat = document.getElementById(`slvpapi-um-${i}`).value;
+                        const qtdMat = document.getElementById(`slvpapi-qtd-${i}`).value;
+                        if (numeroQuantidade(qtdMat) > 0 && codMat) dados.itens.push({ codigo: codMat, descricao: dsMat, lote: loteMat, um: umMat, qtd: qtdMat });
                     }
                     insumosDecoracaoSleeve.forEach((it, i) => {
-                        let qtdIns = document.getElementById(`slvins-qtd-${i}`).value;
-                        if (qtdIns > 0) {
-                            dados.itens.push({ codigo: it.id, descricao: it.ds, lote: "N/A", um: it.um, qtd: qtdIns });
-                        }
+                        const qtdIns = document.getElementById(`slvins-qtd-${i}`).value;
+                        if (numeroQuantidade(qtdIns) > 0) dados.itens.push({ codigo: it.id, descricao: it.ds, lote: "N/A", um: it.um, qtd: qtdIns });
                     });
                 }
 
                 if (setorLogado === "dinamo") {
                     resinasDinamoFixas.forEach((it, i) => {
-                        let qtdRes = document.getElementById(`res-qtd-${i}`).value;
-                        if (qtdRes > 0) {
-                            dados.itens.push({ codigo: it.id, descricao: it.ds, lote: "N/A", um: "KG", qtd: qtdRes });
-                        }
+                        const qtdRes = document.getElementById(`res-qtd-${i}`).value;
+                        if (numeroQuantidade(qtdRes) > 0) dados.itens.push({ codigo: it.id, descricao: it.ds, lote: "N/A", um: "KG", qtd: qtdRes });
                     });
                     for (let i = 0; i < 10; i++) {
-                        let codMat = document.getElementById(`mst-mat-${i}`).value;
-                        let dsMat = document.getElementById(`mst-ds-${i}`).value;
-                        let loteMat = document.getElementById(`mst-lote-${i}`).value;
-                        let umMat = document.getElementById(`mst-um-${i}`).value;
-                        let qtdMat = document.getElementById(`mst-qtd-${i}`).value;
-                        if (qtdMat > 0 && codMat) {
-                            dados.itens.push({ codigo: codMat, descricao: dsMat, lote: loteMat, um: umMat, qtd: qtdMat });
-                        }
+                        const codMat = document.getElementById(`mst-mat-${i}`).value;
+                        const dsMat = document.getElementById(`mst-ds-${i}`).value;
+                        const loteMat = document.getElementById(`mst-lote-${i}`).value;
+                        const umMat = document.getElementById(`mst-um-${i}`).value;
+                        const qtdMat = document.getElementById(`mst-qtd-${i}`).value;
+                        if (numeroQuantidade(qtdMat) > 0 && codMat) dados.itens.push({ codigo: codMat, descricao: dsMat, lote: loteMat, um: umMat, qtd: qtdMat });
                     }
                 }
             }
 
             if (dados.itens.length === 0) {
-                alert("Preencha ao menos uma linha válida antes de salvar!");
+                mostrarAviso('aviso', 'Nenhum item informado', 'Preencha ao menos uma linha válida antes de salvar o inventário.');
                 btnSalvar.innerText = "SALVAR INVENTÁRIO";
                 btnSalvar.disabled = false;
                 return;
             }
 
-            fetch(urlPlanilha, {
-                method: "POST",
-                mode: "no-cors",
-                headers: {
-                    "Content-Type": "text/plain;charset=UTF-8"
-                },
-                body: JSON.stringify(dados)
-            })
-            .then(() => {
-                document.getElementById('modalSucesso').style.display = 'block';
-                gerarEstrutura();
-            })
-            .catch(() => {
-                alert("Erro de comunicação com a planilha. Verifique a internet e tente novamente.");
-            })
-            .finally(() => {
+            try {
+                if (!navigator.onLine) {
+                    await salvarNaFila(dados);
+                    gerarEstrutura();
+                    mostrarAviso('aviso', 'Inventário salvo offline', 'A operação foi armazenada neste dispositivo e será enviada automaticamente quando a conexão voltar.');
+                } else {
+                    try {
+                        await enviarDadosComConfirmacao(dados);
+                        gerarEstrutura();
+                        mostrarAviso('sucesso', 'Inventário salvo', 'Os dados foram registrados com sucesso no banco de dados.');
+                    } catch (erroEnvio) {
+                        await salvarNaFila(dados);
+                        gerarEstrutura();
+                        console.warn('Operação mantida para sincronização:', erroEnvio);
+                        mostrarAviso('aviso', 'Envio pendente', 'Não foi possível confirmar o envio agora. A operação ficou salva neste dispositivo e será sincronizada automaticamente.');
+                    }
+                }
+            } catch (erroLocal) {
+                console.error('Falha ao salvar operação:', erroLocal);
+                mostrarAviso('erro', 'Não foi possível salvar', 'O aplicativo não conseguiu armazenar esta operação. Tente novamente antes de fechar o sistema.');
+            } finally {
                 btnSalvar.innerText = "SALVAR INVENTÁRIO";
                 btnSalvar.disabled = false;
-            });
+                await atualizarStatusConexao();
+            }
         }
 
-        window.onload = () => {
-            setInterval(() => { document.getElementById('data-hora').innerText = new Date().toLocaleString(); }, 1000);
+        window.onload = async () => {
+            const atualizarRelogio = () => {
+                const el = document.getElementById('relogio');
+                if (el) el.innerText = new Date().toLocaleString();
+            };
+            atualizarRelogio();
+            setInterval(atualizarRelogio, 1000);
+            await atualizarStatusConexao();
+            if (navigator.onLine) sincronizarFilaOffline(true);
         };
+
+        window.addEventListener('online', async () => {
+            await atualizarStatusConexao();
+            sincronizarFilaOffline(false);
+            if (setorLogado === 'engprocessos') carregarDadosDash();
+        });
+        window.addEventListener('offline', atualizarStatusConexao);
+
+        window.addEventListener('error', event => {
+            console.error('Erro no aplicativo:', event.error || event.message);
+        });
+        window.addEventListener('unhandledrejection', event => {
+            console.error('Falha não tratada:', event.reason);
+        });
 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -1018,6 +1212,7 @@
         }
     </script>
 
+    <div id="modalSistema" class="modal"><div class="modal-content"><div id="modalSistemaIcon" class="modal-system-icon info">i</div><h3 id="modalSistemaTitulo">Aviso</h3><p id="modalSistemaTexto" class="modal-system-text"></p><div class="modal-btns"><button class="btn-confirm" onclick="fecharModalSistema()">OK</button></div></div></div>
     <div id="modalCalc" class="modal"><div class="modal-content"><h3>Calculadora</h3><input type="number" id="p-t" class="calc-input" placeholder="Peso (g)"><input type="number" id="q-m" class="calc-input" placeholder="Miolos"><div class="modal-btns"><button class="btn-confirm" onclick="aplicarCalculo()">APLICAR</button><button class="btn-no" onclick="fecharModais()">CANCELAR</button></div></div></div>
     <div id="modalAvisoResp" class="modal"><div class="modal-content"><h3>⚠ Campo Obrigatório</h3><p>Preencha o nome do <b>RESPONSÁVEL</b>.</p><div class="modal-btns"><button class="btn-confirm" onclick="fecharModais()">OK</button></div></div></div>
     <div id="modalSucesso" class="modal"><div class="modal-content"><h3>✔ SUCESSO!</h3><p>DADOS SALVOS COM SUCESSO.</p><div class="modal-btns"><button class="btn-confirm" onclick="fecharModais()">OK</button></div></div></div>
