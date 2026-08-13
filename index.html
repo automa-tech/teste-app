@@ -9,77 +9,262 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Inventário Spiltag</title>
     <style>
-        :root { --accent: #a51c30; --navy: #001f3f; --bg: #ffffff; --gray-header: #d9d9d9; }
-        html, body { margin: 0; padding: 0; width: 100%; min-height: 100%; }
-        body { font-family: Calibri, Arial, sans-serif; background-color: #f4f4f4; overflow-x: hidden; }
-        
-        #login-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; background: var(--navy); z-index: 9999; }
-        .login-box { background: #fff; padding: 30px; border-radius: 8px; width: 320px; text-align: center; border: 1px solid #000; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-        .login-box input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #000; box-sizing: border-box; font-weight: bold; }
-        
-        #app-container { display: none; background: #fff; padding: 10px; min-height: 100vh; }
-        table { border-collapse: collapse; width: 100%; margin-bottom: 15px; }
-        .header-table td { padding: 5px 10px; border: 1px solid #000; font-weight: bold; }
-        .title-box { background: var(--gray-header); font-size: 18px; text-align: center; }
-        .instr-box { background: var(--gray-header); text-align: center; font-size: 24px; font-weight: 900; padding: 12px; border: 1px solid #000 !important; text-transform: uppercase; }
-        .section-title { background: var(--gray-header); border: 1px solid #000 !important; text-align: center; font-weight: 900; padding: 10px 0; font-size: 22px; text-transform: uppercase; }
-        
-        .main-table th { color: white; padding: 8px 5px; font-size: 14px; text-transform: uppercase; border: 1px solid #000; }
-        .th-red { background: red !important; }
-        .th-navy { background: var(--navy) !important; }
-        .main-table td { height: 25px; padding: 0; position: relative; border: 1px solid #000; font-size: 13px; font-weight: bold; }
-        
-        input.cell-input { width: 100%; height: 100%; border: none !important; padding: 0 5px; box-sizing: border-box; font-size: 13px; font-weight: bold; outline: none; background: transparent; }
-        input.cell-readonly { background-color: #fdfdfd; color: #333; pointer-events: none; }
-        .text-center { text-align: center; }
-        
-        .btn-login, .btn-confirm { padding: 12px 20px; background: var(--accent); color: white; border: none; cursor: pointer; font-weight: bold; font-size: 15px; border-radius: 4px; min-width: 120px; }
-        .btn-no { padding: 12px 20px; background: #f4f4f4; color: #333; border: 1px solid #999; cursor: pointer; font-weight: bold; font-size: 15px; border-radius: 4px; min-width: 120px; }
-        .btn-save { background: var(--accent); color: white; padding: 12px 25px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; float: right; margin-top: 10px; margin-left: 10px; }
-        #btn-sair { background: #000; color: white; padding: 12px 25px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; float: left; margin-top: 10px; }
-        #btn-imprimir { background: #555; color: white; padding: 12px 25px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; float: left; margin-top: 10px; margin-left: 10px; }
-        .btn-calc { background: #f1c40f; border: 1px solid #000; cursor: pointer; padding: 0 4px; font-size: 10px; height: 18px; position: absolute; right: 2px; top: 3px; }
-        
-        .cards-container { display: flex; gap: 15px; margin: 15px 0; }
-        .card { background: #fdfdfd; border: 1px solid #000; padding: 15px; flex: 1; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .card h4 { margin: 0 0 5px 0; font-size: 14px; color: #555; text-transform: uppercase; }
-        .card p { margin: 0; font-size: 28px; font-weight: bold; color: var(--navy); }
-        .filter-bar { background: var(--gray-header); padding: 10px; border: 1px solid #000; margin-bottom: 15px; display: flex; gap: 15px; align-items: center; }
-        .filter-bar select, .filter-bar input { padding: 6px; font-weight: bold; border: 1px solid #000; }
+        :root {
+            --accent: #9f1d2f;
+            --accent-dark: #7d1625;
+            --accent-soft: #f4e4e4;
+            --cream: #f6f0e7;
+            --cream-2: #efe2d1;
+            --surface: #fffdf9;
+            --surface-2: #fbf5ed;
+            --text: #332b27;
+            --muted: #7e7068;
+            --border: #e8d9cb;
+            --shadow: 0 8px 24px rgba(79, 48, 35, 0.10);
+            --shadow-soft: 0 3px 12px rgba(79, 48, 35, 0.08);
+        }
 
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); }
-        .modal-content { background: white; margin: 15% auto; padding: 30px; border: 2px solid var(--navy); width: 450px; text-align: center; border-radius: 8px; }
-        .modal-btns { display: flex; justify-content: center; gap: 10px; margin-top: 25px; flex-wrap: wrap; }
-        .calc-input { width: 100%; margin-bottom: 12px; border: 1px solid #000; padding: 15px 10px; font-size: 18px; box-sizing: border-box; font-weight: bold; }
+        * { box-sizing: border-box; }
+        html, body { margin: 0; padding: 0; width: 100%; min-height: 100%; }
+        body {
+            font-family: "Segoe UI", Calibri, Arial, sans-serif;
+            background: var(--cream);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        /* LOGIN */
+        #login-screen {
+            position: fixed; inset: 0;
+            width: 100vw; height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+            background: linear-gradient(135deg, #f7f2eb 0%, #eee3d6 100%);
+            z-index: 9999;
+            padding: 24px;
+        }
+        .login-box {
+            width: 430px; max-width: 94vw;
+            background: var(--surface);
+            padding: 38px 38px 34px;
+            border-radius: 22px;
+            border: 1px solid var(--border);
+            border-top: 6px solid var(--accent);
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+        .login-brand { min-height: 70px; display:flex; align-items:center; justify-content:center; margin-bottom: 4px; }
+        .login-logo { max-width: 230px; max-height: 72px; object-fit: contain; }
+        .login-fallback { display:none; color:var(--accent); font-size:36px; font-weight:700; letter-spacing:2px; }
+        .login-subtitle { margin: 8px 0 28px; font-size: 17px; font-weight: 500; letter-spacing: .5px; color: var(--muted); }
+        .login-box input {
+            width: 100%; padding: 15px 16px; margin: 8px 0;
+            border: 1px solid var(--border); border-radius: 12px;
+            background: #fff; color: var(--text);
+            font-size: 16px; font-weight: 500; outline: none;
+            transition: .2s ease;
+        }
+        .login-box input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(159,29,47,.10); }
+
+        /* BASE */
+        #app-container { display: none; background: var(--cream); padding: 18px; min-height: 100vh; }
+        table { border-collapse: separate; border-spacing: 0; width: 100%; margin-bottom: 18px; }
+
+        /* CABEÇALHO */
+        .header-table {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: var(--shadow-soft);
+        }
+        .header-table td { padding: 11px 14px; border: 0; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); font-weight: 500; }
+        .header-table tr:last-child td { border-bottom: 0; }
+        .header-table td:last-child { border-right: 0; }
+        .brand-cell { background: #fff; text-align:center; vertical-align:middle; }
+        .brand-logo { max-width: 190px; max-height: 70px; object-fit: contain; margin: 0 auto; }
+        .brand-fallback { display:none; color:var(--accent); font-size:28px; font-weight:700; letter-spacing:1.5px; }
+        .title-box {
+            background: var(--surface-2);
+            color: var(--text);
+            font-size: 20px;
+            text-align: center;
+            font-weight: 650 !important;
+            letter-spacing: .2px;
+        }
+        #data-hora { background: var(--surface-2); color: var(--accent-dark); font-weight: 600 !important; }
+        #linha-responsavel span { color: var(--accent-dark); font-weight: 600; }
+        #resp-name { background:#fff !important; border:1px solid var(--border) !important; border-radius:10px !important; padding:9px 12px !important; min-height:38px; }
+
+        /* SEÇÕES */
+        .instr-box, .section-title {
+            background: var(--surface);
+            color: var(--text);
+            text-align: center;
+            font-weight: 650;
+            border: 1px solid var(--border) !important;
+            border-radius: 16px;
+            box-shadow: var(--shadow-soft);
+            text-transform: uppercase;
+        }
+        .instr-box { font-size: 23px; padding: 18px 16px; margin-bottom: 12px; }
+        .section-title { font-size: 20px; padding: 14px 12px; margin-bottom: 10px; }
+        .instr-box span[style*="color:red"] { color: var(--accent) !important; }
+
+        /* TABELAS */
+        .main-table {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow-soft);
+        }
+        .main-table th {
+            background: var(--accent) !important;
+            color: #fff;
+            padding: 12px 8px;
+            font-size: 14px;
+            text-transform: uppercase;
+            border: 0;
+            border-right: 1px solid rgba(255,255,255,.22);
+            font-weight: 600;
+        }
+        .main-table th:first-child { border-top-left-radius: 15px; }
+        .main-table th:last-child { border-top-right-radius: 15px; border-right: 0; }
+        .th-red { background: var(--accent-dark) !important; }
+        .th-navy { background: var(--accent) !important; }
+        .main-table td {
+            height: 44px;
+            padding: 5px 7px;
+            position: relative;
+            border: 0;
+            border-right: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            background: var(--surface);
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .main-table tr:last-child td { border-bottom: 0; }
+        .main-table td:last-child { border-right: 0; }
+
+        input.cell-input {
+            width: 100%; min-height: 34px;
+            border: 1px solid var(--border) !important;
+            border-radius: 9px;
+            padding: 5px 9px;
+            font-size: 13px; font-weight: 500;
+            outline: none; background: #fff;
+            color: var(--text);
+            transition: .15s ease;
+        }
+        input.cell-input:not(.cell-readonly):focus { border-color: var(--accent) !important; box-shadow: 0 0 0 2px rgba(159,29,47,.09); }
+        input.cell-readonly {
+            background: transparent;
+            border-color: transparent !important;
+            color: #665b55;
+            pointer-events: none;
+        }
+        .text-center { text-align: center; }
+
+        /* BOTÕES */
+        .btn-login, .btn-confirm, .btn-save {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-weight: 650;
+            border-radius: 12px;
+            transition: .18s ease;
+        }
+        .btn-login, .btn-confirm { padding: 13px 20px; font-size: 15px; min-width: 120px; }
+        .btn-save { padding: 13px 24px; float:right; margin-top:10px; margin-left:10px; }
+        .btn-login:hover, .btn-confirm:hover, .btn-save:hover { background: var(--accent-dark); transform: translateY(-1px); }
+        .btn-no { padding: 12px 20px; background: var(--surface-2); color: var(--text); border:1px solid var(--border); cursor:pointer; font-weight:600; font-size:15px; border-radius:12px; min-width:120px; }
+        #btn-sair, #btn-imprimir {
+            color: white; padding: 13px 24px; border:none; border-radius:12px;
+            cursor:pointer; font-weight:650; float:left; margin-top:10px;
+        }
+        #btn-sair { background: var(--accent-dark); }
+        #btn-imprimir { background: #b98f6d; margin-left:10px; }
+        .btn-calc { background: var(--cream-2); color:var(--accent-dark); border:1px solid var(--border); border-radius:7px; cursor:pointer; padding:0 5px; font-size:11px; height:22px; position:absolute; right:10px; top:11px; }
+
+        /* DASHBOARD */
+        .cards-container { display:flex; gap:16px; margin:16px 0; }
+        .card {
+            background: var(--surface);
+            border:1px solid var(--border);
+            padding:20px;
+            flex:1;
+            border-radius:16px;
+            box-shadow: var(--shadow-soft);
+        }
+        .card h4 { margin:0 0 8px; font-size:14px; color:var(--muted); text-transform:uppercase; }
+        .card p { margin:0; font-size:30px; font-weight:650; color:var(--accent-dark); }
+        .filter-bar {
+            background: var(--surface);
+            padding:14px;
+            border:1px solid var(--border);
+            border-radius:16px;
+            box-shadow: var(--shadow-soft);
+            margin-bottom:16px;
+            display:flex; gap:14px; align-items:center;
+        }
+        .filter-bar select, .filter-bar input {
+            padding:10px 12px; font-weight:500;
+            border:1px solid var(--border); border-radius:10px;
+            background:#fff; color:var(--text); outline:none;
+        }
+        .filter-bar button { border:1px solid var(--border) !important; background:var(--surface-2) !important; border-radius:10px !important; color:var(--accent-dark); }
+
+        /* MODAIS */
+        .modal { display:none; position:fixed; z-index:1000; inset:0; width:100%; height:100%; background:rgba(54,38,31,.58); backdrop-filter: blur(2px); }
+        .modal-content { background:var(--surface); margin:12% auto; padding:30px; border:1px solid var(--border); width:450px; max-width:90vw; text-align:center; border-radius:18px; box-shadow:var(--shadow); }
+        .modal-content h3 { color:var(--accent-dark); }
+        .modal-btns { display:flex; justify-content:center; gap:10px; margin-top:25px; flex-wrap:wrap; }
+        .calc-input { width:100%; margin-bottom:12px; border:1px solid var(--border); border-radius:10px; padding:14px 10px; font-size:18px; font-weight:700; }
+
+        @media (max-width: 900px) {
+            #app-container { padding:10px; }
+            .cards-container { flex-direction:column; }
+            .filter-bar { flex-wrap:wrap; }
+            .instr-box { font-size:18px; }
+            .title-box { font-size:17px; }
+        }
 
         @media print {
-            body { background-color: #fff; color: #000; font-size: 12px; }
-            #login-screen, .modal, #btn-sair, #btn-imprimir, .btn-save, .btn-calc, .filter-bar { display: none !important; }
-            #app-container { display: block !important; padding: 0; margin: 0; width: 100%; }
-            .main-table th { background-color: #001f3f !important; color: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .th-red { background-color: #a51c30 !important; }
-            .title-box, .instr-box, .section-title { background-color: #d9d9d9 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; color: #000 !important; }
-            table { page-break-inside: auto; }
-            tr { page-break-inside: avoid; page-break-after: auto; }
-            input { border: none !important; background: transparent !important; }
+            body { background:#fff; color:#000; font-size:12px; }
+            #login-screen, .modal, #btn-sair, #btn-imprimir, .btn-save, .btn-calc, .filter-bar { display:none !important; }
+            #app-container { display:block !important; padding:0; margin:0; width:100%; background:#fff; }
+            .header-table, .main-table, .card, .instr-box, .section-title { box-shadow:none !important; }
+            .main-table th { background-color:#9f1d2f !important; color:#fff !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+            .title-box, .instr-box, .section-title { background-color:#f7f0e8 !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; color:#000 !important; }
+            table { page-break-inside:auto; }
+            tr { page-break-inside:avoid; page-break-after:auto; }
+            input { box-shadow:none !important; }
         }
     </style>
 </head>
 <body>
     <div id="login-screen">
         <div class="login-box">
-            <h2 style="color: var(--navy); margin-bottom: 20px;">SPILTAG - INVENTÁRIO</h2>
+            <div class="login-brand">
+                <img src="logo.png" class="login-logo" alt="Spiltag" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div class="login-fallback">SPILTAG</div>
+            </div>
+            <div class="login-subtitle">SISTEMA DE DIGITAÇÃO</div>
             <input type="text" id="user" placeholder="Usuário" onkeydown="if(event.key==='Enter') document.getElementById('pass').focus()">
             <input type="password" id="pass" placeholder="Senha" onkeydown="if(event.key==='Enter') autenticar()">
-            <button class="btn-login" style="width: 100%; margin-top: 10px;" onclick="autenticar()">ENTRAR</button>
-            <p id="error-msg" style="color: red; font-size: 13px; display: none; margin-top: 10px; font-weight: bold;">Acesso negado!</p>
+            <button class="btn-login" style="width: 100%; margin-top: 14px;" onclick="autenticar()">ENTRAR NO SISTEMA</button>
+            <p id="error-msg" style="color: var(--accent); font-size: 13px; display: none; margin-top: 12px; font-weight: 800;">Acesso negado!</p>
         </div>
     </div>
 
     <div id="app-container">
         <table class="header-table">
             <tr>
-                <td rowspan="2" style="width:20%; text-align:center; font-size:24px; text-transform: uppercase;">Spiltag</td>
+                <td rowspan="2" class="brand-cell" style="width:20%;">
+                    <img src="logo.png" class="brand-logo" alt="Spiltag" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div class="brand-fallback">SPILTAG</div>
+                </td>
                 <td class="title-box" id="label-setor" style="width:55%;">REGISTRO DE INVENTÁRIO</td>
                 <td style="width:25%; text-align:center; font-size:14px;" id="data-hora">--/--/---- --:--:--</td>
             </tr>
@@ -209,7 +394,7 @@
                     <option value="INJEÇÃO E SOPRO">Injeção e Sopro</option>
                     <option value="DECORAÇÃO">Decoração</option>
                     <option value="DÍNAMO">Dínamo</option>
-                    <option value="INVENTÁRIO DE MASTER">Inventário de Master</option>
+                    <option value="MASTER">Master</option>
                 </select>
                 <span>Busca Rápida:</span>
                 <input type="text" id="busca-dash" placeholder="Responsável ou Código..." oninput="renderizarTabelaDash()">
@@ -253,7 +438,7 @@
             "injesop": { pass: "sopro@1324", label: "INJEÇÃO E SOPRO", linhasPA: 25 },
             "decoracao": { pass: "deco@1324", label: "DECORAÇÃO", linhasPA: 15 },
             "dinamo": { pass: "dina@1324", label: "DÍNAMO", linhasPA: 10 },
-            "master": { pass: "master@1324", label: "INVENTÁRIO DE MASTER", linhasPA: 80 },
+            "master": { pass: "master@1324", label: "MASTER", linhasPA: 80 },
             "engprocessos": { pass: "eng@1324", label: "ENGENHARIA DE PROCESSOS" }
         };
 
@@ -466,7 +651,7 @@
 
             if (setorLogado === "dinamo" || isMaster) {
                 const cm = document.getElementById('corpo-master-dinamo'); cm.innerHTML = "";
-                const limiteMaster = isMaster ? 80 : 5;
+                const limiteMaster = isMaster ? 80 : 10;
                 for (let i = 0; i < limiteMaster; i++) {
                     let tr = document.createElement('tr');
                     tr.innerHTML = `
@@ -645,6 +830,7 @@
             dadosGlobaisDash.forEach(row => {
                 let dataFormata = new Date(row[0]).toLocaleString();
                 let setor = (row[1] || "").toUpperCase().trim();
+                if (setor === "INVENTÁRIO DE MASTER") setor = "MASTER";
                 let resp = (row[2] || "").toLowerCase().trim();
                 let codigo = (row[3] || "").toString().toLowerCase().trim();
                 let desc = (row[4] || "").toLowerCase().trim();
@@ -662,7 +848,7 @@
                     tbody.innerHTML += `
                         <tr>
                             <td style="padding:6px;">${dataFormata}</td>
-                            <td>${row[1] || ""}</td>
+                            <td>${setor}</td>
                             <td>${row[2] || ""}</td>
                             <td>${row[3] || ""}</td>
                             <td>${row[4] || ""}</td>
@@ -778,7 +964,7 @@
                             dados.itens.push({ codigo: it.id, descricao: it.ds, lote: "N/A", um: "KG", qtd: qtdRes });
                         }
                     });
-                    for (let i = 0; i < 5; i++) {
+                    for (let i = 0; i < 10; i++) {
                         let codMat = document.getElementById(`mst-mat-${i}`).value;
                         let dsMat = document.getElementById(`mst-ds-${i}`).value;
                         let loteMat = document.getElementById(`mst-lote-${i}`).value;
