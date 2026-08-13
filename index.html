@@ -687,7 +687,7 @@
             const texto = (valor || "").trim();
             const partes = texto.split(/[}|]/);
             if (partes.length < 2) return null;
-            return { codigo: partes[0].trim(), lote: partes.slice(1).join('}').trim() };
+            return { codigo: partes[0].trim(), lote: partes[1].trim() };
         }
 
         function bipe(el, i, prefix) {
